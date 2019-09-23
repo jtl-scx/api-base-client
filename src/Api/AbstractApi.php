@@ -61,13 +61,13 @@ abstract class AbstractApi
     public function __construct(
         ClientInterface $client,
         Configuration $configuration,
-        RequestFactory $requestFactory,
-        UrlFactory $urlFactory
+        RequestFactory $requestFactory = null,
+        UrlFactory $urlFactory = null
     ) {
         $this->client = $client;
         $this->configuration = $configuration;
-        $this->requestFactory = $requestFactory;
-        $this->urlFactory = $urlFactory;
+        $this->requestFactory = $requestFactory ?? new RequestFactory();
+        $this->urlFactory = $urlFactory ?? new UrlFactory();
     }
 
     /**
