@@ -17,6 +17,12 @@ class RequestFailedException extends \Exception
      */
     private $errorList;
 
+    /**
+     * RequestFailedException constructor.
+     * @param string $message
+     * @param int $code
+     * @param ErrorList|null $errorList
+     */
     public function __construct(string $message, int $code, ?ErrorList $errorList)
     {
         parent::__construct($message, $code);

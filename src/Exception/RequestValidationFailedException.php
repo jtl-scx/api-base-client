@@ -15,6 +15,10 @@ class RequestValidationFailedException extends \Exception
      */
     private $invalidPropertyList;
 
+    /**
+     * RequestValidationFailedException constructor.
+     * @param array $invalidPropertyList
+     */
     public function __construct(array $invalidPropertyList)
     {
         $this->invalidPropertyList = $invalidPropertyList;

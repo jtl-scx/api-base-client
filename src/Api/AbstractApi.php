@@ -70,6 +70,9 @@ abstract class AbstractApi
         $this->urlFactory = $urlFactory;
     }
 
+    /**
+     * @return array
+     */
     private function createHeaders(): array
     {
         $headers = [];
@@ -104,10 +107,19 @@ abstract class AbstractApi
         }
     }
 
+    /**
+     * @return string
+     */
     abstract protected function getUrl(): string;
 
+    /**
+     * @return string
+     */
     abstract protected function getHttpMethod(): string;
 
+    /**
+     * @return string
+     */
     protected function getContentType(): string
     {
         return self::CONTENT_TYPE_JSON;
