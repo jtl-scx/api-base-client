@@ -25,7 +25,7 @@ class Configuration
      * @param string $host
      * @param string|null $authToken
      */
-    public function __construct(string $host, ?string $authToken)
+    public function __construct(string $host, string $authToken = null)
     {
         $this->host = $host;
         $this->authToken = $authToken;

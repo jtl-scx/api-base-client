@@ -10,9 +10,10 @@ namespace JTL\SCX\Client\Api;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Psr7\Request;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
+use JTL\SCX\Client\Request\RequestFactory;
+use JTL\SCX\Client\Request\UrlFactory;
 use JTL\SCX\Client\Serializer\ObjectSerializer;
 use Psr\Http\Message\ResponseInterface;
 
@@ -41,24 +42,32 @@ abstract class AbstractApi
     private $configuration;
 
     /**
+     * @var RequestFactory
+     */
+    private $requestFactory;
+
+    /**
+     * @var UrlFactory
+     */
+    private $urlFactory;
+
+    /**
      * AbstractApi constructor.
      * @param ClientInterface $client
      * @param Configuration $configuration
+     * @param RequestFactory $requestFactory
+     * @param UrlFactory $urlFactory
      */
-    public function __construct(ClientInterface $client, Configuration $configuration)
-    {
+    public function __construct(
+        ClientInterface $client,
+        Configuration $configuration,
+        RequestFactory $requestFactory,
+        UrlFactory $urlFactory
+    ) {
         $this->client = $client;
         $this->configuration = $configuration;
-    }
-
-    private function createRequest(string $body = null, array $params = []): Request
-    {
-        return new Request(
-            $this->getHttpMethod(),
-            $this->createUrl($this->getUrl(), $params),
-            $this->createHeaders(),
-            $body
-        );
+        $this->requestFactory = $requestFactory;
+        $this->urlFactory = $urlFactory;
     }
 
     private function createHeaders(): array
@@ -75,11 +84,6 @@ abstract class AbstractApi
         return $headers;
     }
 
-    private function createUrl(string $url, array $params): string
-    {
-        return \GuzzleHttp\uri_template($this->configuration->getHost() . $url, $params);
-    }
-
     /**
      * @param string|null $body
      * @param array $params
@@ -89,7 +93,9 @@ abstract class AbstractApi
     protected function request(string $body = null, array $params = []): ResponseInterface
     {
         try {
-            return $this->client->send($this->createRequest($body, $params));
+            $url = $this->urlFactory->create($this->configuration->getHost(), $this->getUrl(), $params);
+            $request = $this->requestFactory->create($this->getHttpMethod(), $url, $this->createHeaders(), $body);
+            return $this->client->send($request);
         } catch (ClientException $exception) {
             $responseBody = $exception->getResponse()->getBody()->getContents();
             /** @var ErrorList $errorList */
