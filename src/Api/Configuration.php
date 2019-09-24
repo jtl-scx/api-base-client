@@ -46,4 +46,14 @@ class Configuration
     {
         return $this->authToken;
     }
+
+    /**
+     * @param string|null $authToken
+     * @return Configuration
+     */
+    public function setAuthToken(?string $authToken): Configuration
+    {
+        $this->authToken = $authToken;
+        return $this;
+    }
 }

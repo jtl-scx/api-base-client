@@ -14,7 +14,7 @@ use GuzzleHttp\Psr7\Request;
 use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
-use JTL\SCX\Client\Serializer\ObjectSerializer;
+use JTL\SCX\Client\ObjectSerializer;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 

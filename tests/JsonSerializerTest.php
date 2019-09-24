@@ -6,17 +6,15 @@
  * Date: 2019/09/23
  */
 
-namespace JTL\SCX\Client\Serializer;
-
-use PHPUnit\Framework\TestCase;
+namespace JTL\SCX\Client;
 
 /**
  * Class JsonSerializerTest
  * @package JTL\SCX\Client\Serializer
  *
- * @covers \JTL\SCX\Client\Serializer\JsonSerializer
+ * @covers \JTL\SCX\Client\JsonSerializer
  */
-class JsonSerializerTest extends TestCase
+class JsonSerializerTest extends AbstractTestCase
 {
     public function testCanDeserialize(): void
     {

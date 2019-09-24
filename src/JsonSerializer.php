@@ -6,7 +6,7 @@
  * Date: 2019/09/19
  */
 
-namespace JTL\SCX\Client\Serializer;
+namespace JTL\SCX\Client;
 
 class JsonSerializer
 {

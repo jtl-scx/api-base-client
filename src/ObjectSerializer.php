@@ -16,7 +16,7 @@
  * Do not edit the class manually.
  */
 
-namespace JTL\SCX\Client\Serializer;
+namespace JTL\SCX\Client;
 
 use JTL\SCX\Client\Model\ModelInterface;
 

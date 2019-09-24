@@ -13,9 +13,9 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
+use JTL\SCX\Client\ObjectSerializer;
 use JTL\SCX\Client\Request\RequestFactory;
 use JTL\SCX\Client\Request\UrlFactory;
-use JTL\SCX\Client\Serializer\ObjectSerializer;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractApi
@@ -104,13 +104,14 @@ abstract class AbstractApi
         } catch (ClientException $exception) {
             $response = $exception->getResponse();
             $errorList = null;
+            $responseBody = null;
             if ($response !== null) {
                 $responseBody = $response->getBody()->getContents();
                 /** @var ErrorList $errorList */
                 $errorList = ObjectSerializer::deserialize($responseBody, ErrorList::class);
             }
 
-            throw new RequestFailedException($exception->getMessage(), $exception->getCode(), $errorList);
+            throw new RequestFailedException($exception->getMessage(), $exception->getCode(), $errorList, $responseBody);
         }
     }
 

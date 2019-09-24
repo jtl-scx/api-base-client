@@ -8,6 +8,7 @@
 
 namespace JTL\SCX\Client\Exception;
 
+use JTL\SCX\Client\Channel\Model\ErrorResponse;
 use JTL\SCX\Client\Model\ErrorList;
 
 class RequestFailedException extends \Exception
@@ -18,22 +19,41 @@ class RequestFailedException extends \Exception
     private $errorList;
 
     /**
+     * @var string|null
+     */
+    private $body;
+
+    /**
      * RequestFailedException constructor.
      * @param string $message
      * @param int $code
      * @param ErrorList|null $errorList
+     * @param string|null $body
      */
-    public function __construct(string $message, int $code, ?ErrorList $errorList)
+    public function __construct(string $message, int $code, ?ErrorList $errorList, ?string $body)
     {
         parent::__construct($message, $code);
         $this->errorList = $errorList;
+        $this->body = $body;
     }
 
     /**
-     * @return ErrorList|null
+     * @return string|null
      */
-    public function getErrorList(): ?ErrorList
+    public function getBody(): ?string
     {
-        return $this->errorList;
+        return $this->body;
+    }
+
+    /**
+     * @return ErrorResponse[]
+     */
+    public function getErrorResponseList(): array
+    {
+        if ($this->errorList instanceof ErrorList) {
+            return $this->errorList->getErrorList();
+        }
+
+        return [];
     }
 }

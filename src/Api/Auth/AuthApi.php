@@ -8,6 +8,7 @@
 
 namespace JTL\SCX\Client\Api\Auth;
 
+use GuzzleHttp\Exception\GuzzleException;
 use JTL\SCX\Client\Api\AbstractApi;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
 use JTL\SCX\Client\Api\Auth\Response\AuthResponse;
@@ -21,6 +22,7 @@ class AuthApi extends AbstractApi
      * @param AuthRequest $request
      * @return AuthResponse
      * @throws RequestFailedException
+     * @throws GuzzleException
      */
     public function auth(AuthRequest $request): AuthResponse
     {
