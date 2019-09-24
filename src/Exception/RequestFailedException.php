@@ -51,7 +51,7 @@ class RequestFailedException extends \Exception
     public function getErrorResponseList(): array
     {
         if ($this->errorList instanceof ErrorList) {
-            return $this->errorList->getErrorList();
+            return $this->errorList->getErrorList() ?? [];
         }
 
         return [];

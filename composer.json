@@ -3,7 +3,6 @@
   "type": "library",
   "description": "SCX-Client Base",
   "require": {
-    "guzzlehttp/guzzle": "^6.3",
     "ext-json": "*"
   },
   "autoload": {
@@ -19,7 +18,11 @@
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.15",
     "phpunit/phpunit": "^8.3",
-    "mockery/mockery": "^1.2"
+    "mockery/mockery": "^1.2",
+    "guzzlehttp/guzzle": "^6.3"
+  },
+  "suggest": {
+    "guzzlehttp/guzzle": "Require this for making HTTP calls"
   },
   "scripts": {
     "phpcs": [
