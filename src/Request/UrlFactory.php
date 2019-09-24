@@ -8,6 +8,8 @@
 
 namespace JTL\SCX\Client\Request;
 
+use function GuzzleHttp\uri_template;
+
 class UrlFactory
 {
     /**
@@ -18,6 +20,30 @@ class UrlFactory
      */
     public function create(string $host, string $url, array $params = []): string
     {
-        return \GuzzleHttp\uri_template($host . $url, $params);
+        if (!$this->endsWithCharacter($host, '/') && !$this->startsWithCharacter($url, '/')) {
+            $host .= '/';
+        }
+
+        return uri_template($host . $url, $params);
+    }
+
+    /**
+     * @param string $value
+     * @param string $character
+     * @return bool
+     */
+    private function endsWithCharacter(string $value, string $character): bool
+    {
+        return (substr($value, -1) === $character);
+    }
+
+    /**
+     * @param string $value
+     * @param string $character
+     * @return bool
+     */
+    private function startsWithCharacter(string $value, string $character): bool
+    {
+        return (substr($value, 0, 1) === $character);
     }
 }

@@ -30,7 +30,8 @@
 namespace JTL\SCX\Client\Channel\Model;
 
 use ArrayAccess;
-use JTL\SCX\Client\Channel\ObjectSerializer;
+use JTL\SCX\Client\Model\ModelInterface;
+use JTL\SCX\Client\Serializer\ObjectSerializer;
 
 /**
  * ErrorResponse Class Doc Comment
