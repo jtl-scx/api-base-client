@@ -14,7 +14,7 @@ use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
 use JTL\SCX\Client\Api\Auth\Response\AuthResponse;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\AuthToken;
-use JTL\SCX\Client\Serializer\ObjectSerializer;
+use JTL\SCX\Client\ObjectSerializer;
 
 class AuthApi extends AbstractApi
 {
