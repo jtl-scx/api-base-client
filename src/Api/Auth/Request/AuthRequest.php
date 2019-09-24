@@ -36,6 +36,5 @@ class AuthRequest extends AbstractRequest
 
     public function validate(): void
     {
-        return;
     }
 }
