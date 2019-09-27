@@ -8,8 +8,8 @@
 
 namespace JTL\SCX\Client\Exception;
 
-use JTL\SCX\Client\Channel\Model\ErrorResponse;
 use JTL\SCX\Client\Model\ErrorList;
+use JTL\SCX\Client\Model\ErrorResponse;
 
 class RequestFailedException extends \Exception
 {
