@@ -29,5 +29,4 @@ class AbstractResponseTest extends TestCase
 
 class TestResponse extends AbstractResponse
 {
-
 }
