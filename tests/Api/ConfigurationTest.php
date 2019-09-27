@@ -26,6 +26,5 @@ class ConfigurationTest extends AbstractTestCase
         $configuration = new Configuration($host, $authToken);
 
         $this->assertSame($host, $configuration->getHost());
-        $this->assertSame($authToken, $configuration->getAuthToken());
     }
 }

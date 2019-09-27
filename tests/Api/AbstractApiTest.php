@@ -35,7 +35,7 @@ class AbstractApiTest extends AbstractTestCase
         $requestFactory = $this->createRequestFactoryMock(AbstractApi::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
-        $api = new TestApi($client, $configuration, $requestFactory, $urlFactory);
+        $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
 
         $apiResponse = $api->call();
         
@@ -75,7 +75,7 @@ class AbstractApiTest extends AbstractTestCase
             ->with($body, ErrorList::class)
             ->andReturn($errorList);
 
-        $api = new TestApi($client, $configuration, $requestFactory, $urlFactory);
+        $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
 
         $this->expectException(RequestFailedException::class);
         $api->call();

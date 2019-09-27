@@ -30,16 +30,11 @@ abstract class AbstractTestCase extends TestCase
     protected function createConfigurationMock()
     {
         $host = 'http://localhost';
-        $authToken = '123456789';
 
         $configuration = Mockery::mock(Configuration::class);
         $configuration->shouldReceive('getHost')
             ->once()
             ->andReturn($host);
-
-        $configuration->shouldReceive('getAuthToken')
-            ->once()
-            ->andReturn($authToken);
 
         return $configuration;
     }
