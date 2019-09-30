@@ -8,9 +8,11 @@
 
 namespace JTL\SCX\Client\Api;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ServerException;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\ObjectSerializer;
@@ -40,7 +42,7 @@ abstract class AbstractApi
     /**
      * @var Configuration
      */
-    private $configuration;
+    protected $configuration;
 
     /**
      * @var RequestFactory
@@ -60,13 +62,13 @@ abstract class AbstractApi
      * @param UrlFactory $urlFactory
      */
     public function __construct(
-        ClientInterface $client,
         Configuration $configuration,
+        ClientInterface $client = null,
         RequestFactory $requestFactory = null,
         UrlFactory $urlFactory = null
     ) {
-        $this->client = $client;
         $this->configuration = $configuration;
+        $this->client = $client ?? new Client();
         $this->requestFactory = $requestFactory ?? new RequestFactory();
         $this->urlFactory = $urlFactory ?? new UrlFactory();
     }
@@ -74,15 +76,9 @@ abstract class AbstractApi
     /**
      * @return array
      */
-    private function createHeaders(): array
+    protected function createHeaders(): array
     {
         $headers = [];
-
-        $authToken = $this->configuration->getAuthToken();
-        if ($authToken !== null) {
-            $headers['Authorization'] = 'Bearer ' . $authToken;
-        }
-
         $headers['Content-Type'] = $this->getContentType();
 
         return $headers;
@@ -101,7 +97,7 @@ abstract class AbstractApi
             $url = $this->urlFactory->create($this->configuration->getHost(), $this->getUrl(), $params);
             $request = $this->requestFactory->create($this->getHttpMethod(), $url, $this->createHeaders(), $body);
             return $this->client->send($request);
-        } catch (ClientException $exception) {
+        } catch (ClientException|ServerException $exception) {
             $response = $exception->getResponse();
             $errorList = null;
             $responseBody = null;

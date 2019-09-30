@@ -10,6 +10,9 @@ namespace JTL\SCX\Client\Api;
 
 class Configuration
 {
+    public const HOST_SANDBOX = 'https://scx-sbx.api.jtl-software.com';
+    public const HOST_PRODUCTION = 'https://scx.api.jtl-software.com';
+
     /**
      * @var string
      */
@@ -18,17 +21,17 @@ class Configuration
     /**
      * @var string|null
      */
-    private $authToken;
+    private $refreshToken;
 
     /**
      * Configuration constructor.
      * @param string $host
-     * @param string|null $authToken
+     * @param string|null $refreshToken
      */
-    public function __construct(string $host, string $authToken = null)
+    public function __construct(string $host = self::HOST_PRODUCTION, string $refreshToken = null)
     {
         $this->host = $host;
-        $this->authToken = $authToken;
+        $this->refreshToken = $refreshToken;
     }
 
     /**
@@ -42,18 +45,8 @@ class Configuration
     /**
      * @return string|null
      */
-    public function getAuthToken(): ?string
+    public function getRefreshToken(): ?string
     {
-        return $this->authToken;
-    }
-
-    /**
-     * @param string|null $authToken
-     * @return Configuration
-     */
-    public function setAuthToken(?string $authToken): Configuration
-    {
-        $this->authToken = $authToken;
-        return $this;
+        return $this->refreshToken;
     }
 }

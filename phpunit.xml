@@ -24,7 +24,7 @@
                 <directory>src</directory>
                 <exclude>
                     <directory>src/Model</directory>
-                    <file>src/Serializer/ObjectSerializer.php</file>
+                    <file>src/ObjectSerializer.php</file>
                 </exclude>
             </whitelist>
         </filter>

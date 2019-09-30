@@ -29,4 +29,16 @@ class UrlFactoryTest extends TestCase
         $result = $factory->create($host, $url, $params);
         $this->assertSame('http://localhost/foo?bar=TEST', $result);
     }
+
+    public function testCanCreateUrlWithMissingSlash()
+    {
+        $host = 'http://localhost';
+        $url = 'foo{?bar}';
+        $params = ['bar' => 'TEST'];
+
+        $factory = new UrlFactory();
+
+        $result = $factory->create($host, $url, $params);
+        $this->assertSame('http://localhost/foo?bar=TEST', $result);
+    }
 }

@@ -12,7 +12,7 @@ use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Api\AbstractApi;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
 use JTL\SCX\Client\Model\AuthToken;
-use JTL\SCX\Client\Serializer\ObjectSerializer;
+use JTL\SCX\Client\ObjectSerializer;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
@@ -56,7 +56,7 @@ class AuthApiTest extends AbstractTestCase
             ->once()
             ->andReturn($refreshToken);
 
-        $api = new AuthApi($client, $configuration, $requestFactory, $urlFactory);
+        $api = new AuthApi($configuration, $client, $requestFactory, $urlFactory);
         $apiResponse = $api->auth($request);
 
         $this->assertSame(200, $apiResponse->getStatusCode());

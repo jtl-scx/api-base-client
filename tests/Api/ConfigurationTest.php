@@ -21,11 +21,11 @@ class ConfigurationTest extends AbstractTestCase
     public function testCanBeCreated(): void
     {
         $host = uniqid('host', true);
-        $authToken = uniqid('authToken', true);
+        $refreshToken = uniqid('refreshToken', true);
 
-        $configuration = new Configuration($host, $authToken);
+        $configuration = new Configuration($host, $refreshToken);
 
         $this->assertSame($host, $configuration->getHost());
-        $this->assertSame($authToken, $configuration->getAuthToken());
+        $this->assertSame($refreshToken, $configuration->getRefreshToken());
     }
 }
