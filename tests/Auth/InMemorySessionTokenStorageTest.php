@@ -25,7 +25,7 @@ class InMemorySessionTokenStorageTest extends TestCase
         $sessionToken = Mockery::mock(SessionToken::class);
         $storage = new InMemorySessionTokenStorage();
 
-        $storage->save($sessionToken);
-        $this->assertSame($sessionToken, $storage->load());
+        $storage->save('foo', $sessionToken);
+        $this->assertSame($sessionToken, $storage->load('foo'));
     }
 }

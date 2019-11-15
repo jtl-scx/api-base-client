@@ -70,7 +70,7 @@ abstract class AbstractAuthAwareApi extends AbstractApi
      */
     protected function request(string $body = null, array $params = []): ResponseInterface
     {
-        $this->sessionToken = $this->tokenStorage->load();
+        $this->sessionToken = $this->tokenStorage->load($this->configuration->getHost());
 
         if ($this->isSessionTokenExpired()) {
             $this->refreshSessionToken();
@@ -113,7 +113,7 @@ abstract class AbstractAuthAwareApi extends AbstractApi
             $response->getAuthToken()->getAuthToken(),
             new \DateTimeImmutable('+' . ($response->getAuthToken()->getExpiresIn() - 2) . ' seconds')
         );
-        $this->tokenStorage->save($this->sessionToken);
+        $this->tokenStorage->save($this->configuration->getHost(), $this->sessionToken);
     }
 
     /**
