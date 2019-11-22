@@ -33,7 +33,6 @@ abstract class AbstractTestCase extends TestCase
 
         $configuration = Mockery::mock(Configuration::class);
         $configuration->shouldReceive('getHost')
-            ->once()
             ->andReturn($host);
 
         return $configuration;

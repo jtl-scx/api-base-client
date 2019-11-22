@@ -13,23 +13,25 @@ use JTL\SCX\Client\Auth\Model\SessionToken;
 class InMemorySessionTokenStorage implements SessionTokenStorage
 {
     /**
-     * @var SessionToken
+     * @var SessionToken[]
      */
-    private $sessionToken;
+    private $sessionTokenMap;
 
     /**
+     * @param string $host
      * @return SessionToken
      */
-    public function load(): ?SessionToken
+    public function load(string $host): ?SessionToken
     {
-        return $this->sessionToken;
+        return $this->sessionTokenMap[$host];
     }
 
     /**
+     * @param string $host
      * @param SessionToken $authToken
      */
-    public function save(SessionToken $authToken): void
+    public function save(string $host, SessionToken $authToken): void
     {
-        $this->sessionToken = $authToken;
+        $this->sessionTokenMap[$host] = $authToken;
     }
 }

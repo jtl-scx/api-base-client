@@ -133,7 +133,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $this->sessionTokenStorage->shouldReceive('save')
             ->once()
-            ->with(Mockery::type(SessionToken::class));
+            ->with('http://localhost', Mockery::type(SessionToken::class));
 
         $response = $testAuthApi->call();
 
@@ -158,7 +158,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $configuration = Mockery::mock(Configuration::class);
         $configuration->shouldReceive('getHost')
-            ->twice()
+            ->times(4)
             ->andReturn($host);
 
         $this->sessionTokenStorage->shouldReceive('load')
@@ -192,7 +192,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $this->sessionTokenStorage->shouldReceive('save')
             ->once()
-            ->with(Mockery::type(SessionToken::class));
+            ->with('http://localhost', Mockery::type(SessionToken::class));
 
         $requestFactory = Mockery::mock(RequestFactory::class);
         $request = Mockery::mock(Request::class);

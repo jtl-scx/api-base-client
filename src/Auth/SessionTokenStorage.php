@@ -12,6 +12,6 @@ use JTL\SCX\Client\Auth\Model\SessionToken;
 
 interface SessionTokenStorage
 {
-    public function load(): ?SessionToken;
-    public function save(SessionToken $authToken): void;
+    public function load(string $host): ?SessionToken;
+    public function save(string $host, SessionToken $authToken): void;
 }
