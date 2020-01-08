@@ -8,9 +8,9 @@
 
 namespace JTL\SCX\Client\Api\Auth\Request;
 
-use JTL\SCX\Client\Request\AbstractRequest;
+use JTL\SCX\Client\Request\ScxApiRequest;
 
-class AuthRequest extends AbstractRequest
+class AuthRequest implements ScxApiRequest
 {
     /**
      * @var string
