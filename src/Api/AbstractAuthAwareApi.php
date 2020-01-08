@@ -107,10 +107,10 @@ abstract class AbstractAuthAwareApi extends AbstractApi
      */
     private function refreshSessionToken(): void
     {
-        $request = new AuthRequest($this->configuration->getRefreshToken());
+        $request = new AuthRequest((string)$this->configuration->getRefreshToken());
         $response = $this->authApi->auth($request);
         $this->sessionToken = new SessionToken(
-            $response->getAuthToken()->getAuthToken(),
+            (string)$response->getAuthToken()->getAuthToken(),
             new \DateTimeImmutable('+' . ($response->getAuthToken()->getExpiresIn() - 2) . ' seconds')
         );
         $this->tokenStorage->save($this->configuration->getHost(), $this->sessionToken);
