@@ -17,25 +17,15 @@ use JTL\SCX\Client\Auth\Model\SessionToken;
 use JTL\SCX\Client\Auth\SessionTokenStorage;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Request\RequestFactory;
+use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractAuthAwareApi extends AbstractApi
 {
-    /**
-     * @var AuthApi
-     */
-    private $authApi;
-
-    /**
-     * @var SessionTokenStorage
-     */
-    private $tokenStorage;
-
-    /**
-     * @var SessionToken
-     */
-    private $sessionToken;
+    private AuthApi $authApi;
+    private SessionTokenStorage $tokenStorage;
+    private ?SessionToken $sessionToken;
 
     /**
      * AbstractAuthAwareApi constructor.
@@ -61,27 +51,25 @@ abstract class AbstractAuthAwareApi extends AbstractApi
 
 
     /**
-     * @param string|null $body
-     * @param array $params
+     * @param ScxApiRequest $request
      * @return ResponseInterface
      * @throws GuzzleException
      * @throws RequestFailedException
-     * @throws \Exception
      */
-    protected function request(string $body = null, array $params = []): ResponseInterface
+    protected function request(ScxApiRequest $request): ResponseInterface
     {
-        $this->sessionToken = $this->tokenStorage->load($this->configuration->getHost());
+        $this->sessionToken = $this->tokenStorage->load($this->configuration->hashConfiguration());
 
         if ($this->isSessionTokenExpired()) {
             $this->refreshSessionToken();
         }
 
         try {
-            return parent::request($body, $params);
+            return parent::request($request);
         } catch (RequestFailedException $e) {
             if ($this->isUnauthorized($e)) {
                 $this->refreshSessionToken();
-                return parent::request($body, $params);
+                return parent::request($request);
             }
             throw $e;
         }
@@ -89,7 +77,6 @@ abstract class AbstractAuthAwareApi extends AbstractApi
 
     /**
      * @return bool
-     * @throws \Exception
      */
     private function isSessionTokenExpired(): bool
     {
@@ -101,9 +88,8 @@ abstract class AbstractAuthAwareApi extends AbstractApi
     }
 
     /**
-     * @throws RequestFailedException
      * @throws GuzzleException
-     * @throws \Exception
+     * @throws RequestFailedException
      */
     private function refreshSessionToken(): void
     {
@@ -113,18 +99,9 @@ abstract class AbstractAuthAwareApi extends AbstractApi
             (string)$response->getAuthToken()->getAuthToken(),
             new \DateTimeImmutable('+' . ($response->getAuthToken()->getExpiresIn() - 2) . ' seconds')
         );
-        $this->tokenStorage->save($this->configuration->getHost(), $this->sessionToken);
-    }
 
-    /**
-     * @return array
-     */
-    protected function createHeaders(): array
-    {
-        $headers = parent::createHeaders();
-        $headers['Authorization'] = 'Bearer ' . (string)$this->sessionToken->getSessionToken();
-
-        return $headers;
+        $storageKey = $this->configuration->hashConfiguration();
+        $this->tokenStorage->save($storageKey, $this->sessionToken);
     }
 
     /**
@@ -134,5 +111,13 @@ abstract class AbstractAuthAwareApi extends AbstractApi
     private function isUnauthorized(RequestFailedException $exception): bool
     {
         return $exception->getCode() === 401;
+    }
+
+    protected function createHeaders(ScxApiRequest $request): array
+    {
+        $headers = parent::createHeaders($request);
+        $headers['Authorization'] = 'Bearer ' . (string)$this->sessionToken->getSessionToken();
+
+        return $headers;
     }
 }

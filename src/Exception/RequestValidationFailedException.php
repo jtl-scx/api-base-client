@@ -10,10 +10,7 @@ namespace JTL\SCX\Client\Exception;
 
 class RequestValidationFailedException extends \Exception
 {
-    /**
-     * @var array
-     */
-    private $invalidPropertyList;
+    private array $invalidPropertyList;
 
     /**
      * RequestValidationFailedException constructor.

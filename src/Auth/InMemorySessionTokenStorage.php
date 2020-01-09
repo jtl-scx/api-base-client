@@ -15,23 +15,23 @@ class InMemorySessionTokenStorage implements SessionTokenStorage
     /**
      * @var SessionToken[]
      */
-    private $sessionTokenMap;
+    private array $sessionTokenMap;
 
     /**
-     * @param string $host
+     * @param string $key
      * @return SessionToken
      */
-    public function load(string $host): ?SessionToken
+    public function load(string $key): ?SessionToken
     {
-        return $this->sessionTokenMap[$host];
+        return $this->sessionTokenMap[$key];
     }
 
     /**
-     * @param string $host
+     * @param string $key
      * @param SessionToken $authToken
      */
-    public function save(string $host, SessionToken $authToken): void
+    public function save(string $key, SessionToken $authToken): void
     {
-        $this->sessionTokenMap[$host] = $authToken;
+        $this->sessionTokenMap[$key] = $authToken;
     }
 }

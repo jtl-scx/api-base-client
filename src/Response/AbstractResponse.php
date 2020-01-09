@@ -10,10 +10,7 @@ namespace JTL\SCX\Client\Response;
 
 class AbstractResponse
 {
-    /**
-     * @var int
-     */
-    private $statusCode;
+    private int $statusCode;
 
     /**
      * AbstractResponse constructor.

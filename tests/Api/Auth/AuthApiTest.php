@@ -8,11 +8,14 @@
 
 namespace JTL\SCX\Client\Api\Auth;
 
+use GuzzleHttp\ClientInterface;
 use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Api\AbstractApi;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
 use JTL\SCX\Client\Model\AuthToken;
 use JTL\SCX\Client\ObjectSerializer;
+use JTL\SCX\Client\Request\RequestFactory;
+use JTL\SCX\Client\Request\ScxApiRequest;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,22 +29,23 @@ class AuthApiTest extends AbstractTestCase
 {
     public function testCanAuthenticate()
     {
-        $response = Mockery::mock(ResponseInterface::class);
+        $responseMock = Mockery::mock(ResponseInterface::class);
         $responseBody = uniqid('body', true);
-        $request = Mockery::mock(AuthRequest::class);
         $refreshToken = uniqid('refreshToken', true);
 
-        $response->shouldReceive('getBody->getContents')
+        $responseMock->shouldReceive('getBody->getContents')
             ->once()
             ->andReturn($responseBody);
 
-        $response->shouldReceive('getStatusCode')
+        $responseMock->shouldReceive('getStatusCode')
             ->once()
             ->andReturn(200);
 
-        $client = $this->createClientMock($response);
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())->method('send')->willReturn($responseMock);
+
         $configuration = $this->createConfigurationMock();
-        $requestFactory = $this->createRequestFactoryMock(AbstractApi::HTTP_METHOD_POST);
+        $requestFactory = $this->createMock(RequestFactory::class);
         $urlFactory = $this->createUrlFactoryMock('/auth{?refreshToken}', ['refreshToken' => $refreshToken]);
         $objectSerializer = Mockery::mock('alias:'. ObjectSerializer::class);
 
@@ -52,9 +56,12 @@ class AuthApiTest extends AbstractTestCase
             ->once()
             ->andReturn($authToken);
 
-        $request->shouldReceive('getRefreshToken')
-            ->once()
-            ->andReturn($refreshToken);
+        $request = Mockery::spy(AuthRequest::class);
+        $request->shouldReceive('getRefreshToken')->andReturn($refreshToken);
+        $request->shouldReceive('getUrl')->andReturn('/auth{?refreshToken}');
+        $request->shouldReceive('getParams')->andReturn(['refreshToken' => $refreshToken]);
+        $request->shouldReceive('getMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+
 
         $api = new AuthApi($configuration, $client, $requestFactory, $urlFactory);
         $apiResponse = $api->auth($request);

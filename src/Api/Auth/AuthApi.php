@@ -26,27 +26,11 @@ class AuthApi extends AbstractApi
      */
     public function auth(AuthRequest $request): AuthResponse
     {
-        $response = $this->request(null, ['refreshToken' => $request->getRefreshToken()]);
+        $response = $this->request($request);
 
         /** @var AuthToken $model */
         $model = ObjectSerializer::deserialize($response->getBody()->getContents(), AuthToken::class);
-        
+
         return new AuthResponse($model, $response->getStatusCode());
-    }
-
-    /**
-     * @return string
-     */
-    protected function getUrl(): string
-    {
-        return '/auth{?refreshToken}';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getHttpMethod(): string
-    {
-        return AbstractApi::HTTP_METHOD_POST;
     }
 }

@@ -13,15 +13,8 @@ class Configuration
     public const HOST_SANDBOX = 'https://scx-sbx.api.jtl-software.com';
     public const HOST_PRODUCTION = 'https://scx.api.jtl-software.com';
 
-    /**
-     * @var string
-     */
-    private $host;
-
-    /**
-     * @var string|null
-     */
-    private $refreshToken;
+    private ?string $host;
+    private ?string $refreshToken;
 
     /**
      * Configuration constructor.
@@ -32,6 +25,14 @@ class Configuration
     {
         $this->host = $host;
         $this->refreshToken = $refreshToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function hashConfiguration(): string
+    {
+        return md5($this->getHost() . $this->getRefreshToken());
     }
 
     /**

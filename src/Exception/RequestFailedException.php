@@ -13,15 +13,8 @@ use JTL\SCX\Client\Model\ErrorResponse;
 
 class RequestFailedException extends \Exception
 {
-    /**
-     * @var ErrorList|null
-     */
-    private $errorList;
-
-    /**
-     * @var string|null
-     */
-    private $body;
+    private ?ErrorList $errorList;
+    private ?string $body;
 
     /**
      * RequestFailedException constructor.

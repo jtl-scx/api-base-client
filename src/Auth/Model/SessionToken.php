@@ -11,15 +11,8 @@ namespace JTL\SCX\Client\Auth\Model;
 
 class SessionToken
 {
-    /**
-     * @var string
-     */
-    private $sessionToken;
-
-    /**
-     * @var \DateTimeInterface
-     */
-    private $expiresAt;
+    private string $sessionToken;
+    private \DateTimeInterface $expiresAt;
 
     /**
      * AuthToken constructor.

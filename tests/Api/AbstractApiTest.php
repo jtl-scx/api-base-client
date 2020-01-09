@@ -15,6 +15,7 @@ use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\ObjectSerializer;
+use JTL\SCX\Client\Request\ScxApiRequest;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,13 +33,20 @@ class AbstractApiTest extends AbstractTestCase
 
         $client = $this->createClientMock($response);
         $configuration = $this->createConfigurationMock();
-        $requestFactory = $this->createRequestFactoryMock(AbstractApi::HTTP_METHOD_POST);
+        $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
         $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
 
-        $apiResponse = $api->call();
-        
+        $requestMock = Mockery::mock(ScxApiRequest::class);
+        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
+        $requestMock->shouldReceive('getParams')->andReturn([]);
+        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
+        $requestMock->shouldReceive('getContentType')->andReturn('bier');
+        $requestMock->shouldReceive('getBody')->andReturnNull();
+        $apiResponse = $api->call($requestMock);
+
         $this->assertSame($response, $apiResponse);
     }
 
@@ -62,9 +70,9 @@ class AbstractApiTest extends AbstractTestCase
             ->once()
             ->with(Mockery::type(Request::class))
             ->andThrow(new ClientException('Error', $request, $response));
-        
+
         $configuration = $this->createConfigurationMock();
-        $requestFactory = $this->createRequestFactoryMock(AbstractApi::HTTP_METHOD_POST);
+        $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
         $errorList = Mockery::mock(ErrorList::class);
@@ -77,25 +85,23 @@ class AbstractApiTest extends AbstractTestCase
 
         $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
 
+        $requestMock = Mockery::mock(ScxApiRequest::class);
+        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
+        $requestMock->shouldReceive('getParams')->andReturn([]);
+        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
+        $requestMock->shouldReceive('getContentType')->andReturn('bier');
+        $requestMock->shouldReceive('getBody')->andReturnNull();
+
         $this->expectException(RequestFailedException::class);
-        $api->call();
+        $api->call($requestMock);
     }
 }
 
 class TestApi extends AbstractApi
 {
-    public function call(): ResponseInterface
+    public function call(ScxApiRequest $request): ResponseInterface
     {
-        return $this->request();
-    }
-
-    protected function getUrl(): string
-    {
-        return '/foo';
-    }
-
-    protected function getHttpMethod(): string
-    {
-        return AbstractApi::HTTP_METHOD_POST;
+        return $this->request($request);
     }
 }

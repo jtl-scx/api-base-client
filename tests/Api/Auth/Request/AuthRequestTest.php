@@ -18,13 +18,11 @@ use JTL\SCX\Client\AbstractTestCase;
  */
 class AuthRequestTest extends AbstractTestCase
 {
-    public function testCanBeCreatedAndValidated(): void
+    public function testCanReadRefreshToken(): void
     {
         $refreshToken = uniqid('refreshToken', true);
 
         $request = new AuthRequest($refreshToken);
-
-        $request->validate();
         $this->assertSame($refreshToken, $request->getRefreshToken());
     }
 }

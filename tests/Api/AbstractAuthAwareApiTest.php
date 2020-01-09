@@ -18,6 +18,7 @@ use JTL\SCX\Client\Auth\Model\SessionToken;
 use JTL\SCX\Client\Auth\SessionTokenStorage;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Request\RequestFactory;
+use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
@@ -93,8 +94,11 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
     public function testCanRequestWithoutSessionToken(): void
     {
         $configuration = $this->createConfigurationMock();
+        $storageKey = 'key';
+        $configuration->shouldReceive('hashConfiguration')->andReturn($storageKey);
+
         $client = $this->createClientMock($this->response);
-        $requestFactory = $this->createRequestFactoryMock(AbstractApi::HTTP_METHOD_POST);
+        $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
         $testAuthApi = new TestAuthApi(
@@ -108,11 +112,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $this->sessionTokenStorage->shouldReceive('load')
             ->once()
-            ->andReturn($this->sessionTokenMock);
-
-        $this->sessionTokenMock->shouldReceive('getExpiresAt')
-            ->once()
-            ->andReturn($this->tokenExpiresAt);
+            ->andReturnNull();
 
         $configuration->shouldReceive('getRefreshToken')
             ->once()
@@ -133,9 +133,16 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $this->sessionTokenStorage->shouldReceive('save')
             ->once()
-            ->with('http://localhost', Mockery::type(SessionToken::class));
+            ->with($storageKey, Mockery::type(SessionToken::class));
 
-        $response = $testAuthApi->call();
+        $requestMock = Mockery::mock(ScxApiRequest::class);
+        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
+        $requestMock->shouldReceive('getParams')->andReturn([]);
+        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
+        $requestMock->shouldReceive('getContentType')->andReturn('bier');
+        $requestMock->shouldReceive('getBody')->andReturnNull();
+        $response = $testAuthApi->call($requestMock);
 
         $this->assertSame($this->response, $response);
     }
@@ -157,9 +164,9 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
         $host = 'http://localhost';
 
         $configuration = Mockery::mock(Configuration::class);
-        $configuration->shouldReceive('getHost')
-            ->times(4)
-            ->andReturn($host);
+        $storageKey = 'key';
+        $configuration->shouldReceive('hashConfiguration')->andReturn($storageKey);
+        $configuration->shouldReceive('getHost')->andReturn($host);
 
         $this->sessionTokenStorage->shouldReceive('load')
             ->once()
@@ -192,13 +199,13 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
 
         $this->sessionTokenStorage->shouldReceive('save')
             ->once()
-            ->with('http://localhost', Mockery::type(SessionToken::class));
+            ->with($storageKey, Mockery::type(SessionToken::class));
 
         $requestFactory = Mockery::mock(RequestFactory::class);
         $request = Mockery::mock(Request::class);
 
         $requestFactory->shouldReceive('create')
-            ->with(AbstractApi::HTTP_METHOD_POST, Mockery::any(), Mockery::any(), null)
+            ->with(ScxApiRequest::HTTP_METHOD_POST, Mockery::any(), Mockery::any(), null)
             ->twice()
             ->andReturn($request);
 
@@ -218,25 +225,23 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
             $urlFactory
         );
 
-        $response = $testAuthApi->call();
+        $requestMock = Mockery::mock(ScxApiRequest::class);
+        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
+        $requestMock->shouldReceive('getParams')->andReturn([]);
+        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
+        $requestMock->shouldReceive('getContentType')->andReturn('bier');
+        $requestMock->shouldReceive('getBody')->andReturnNull();
+
+        $response = $testAuthApi->call($requestMock);
         $this->assertSame($this->response, $response);
     }
 }
 
 class TestAuthApi extends AbstractAuthAwareApi
 {
-    public function call(): ResponseInterface
+    public function call(ScxApiRequest $request): ResponseInterface
     {
-        return $this->request();
-    }
-
-    protected function getUrl(): string
-    {
-        return '/foo';
-    }
-
-    protected function getHttpMethod(): string
-    {
-        return AbstractApi::HTTP_METHOD_POST;
+        return $this->request($request);
     }
 }

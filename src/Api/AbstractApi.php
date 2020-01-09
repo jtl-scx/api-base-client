@@ -17,42 +17,16 @@ use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\ObjectSerializer;
 use JTL\SCX\Client\Request\RequestFactory;
+use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractApi
 {
-    public const HTTP_METHOD_GET = 'GET';
-
-    public const HTTP_METHOD_PATCH = 'PATCH';
-
-    public const HTTP_METHOD_POST = 'POST';
-
-    public const HTTP_METHOD_PUT = 'PUT';
-
-    public const HTTP_METHOD_DELETE = 'DELETE';
-
-    public const CONTENT_TYPE_JSON = 'application/json';
-
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var Configuration
-     */
-    protected $configuration;
-
-    /**
-     * @var RequestFactory
-     */
-    private $requestFactory;
-
-    /**
-     * @var UrlFactory
-     */
-    private $urlFactory;
+    protected Configuration $configuration;
+    private ClientInterface $client;
+    private RequestFactory $requestFactory;
+    private UrlFactory $urlFactory;
 
     /**
      * AbstractApi constructor.
@@ -74,28 +48,27 @@ abstract class AbstractApi
     }
 
     /**
-     * @return array
-     */
-    protected function createHeaders(): array
-    {
-        $headers = [];
-        $headers['Content-Type'] = $this->getContentType();
-
-        return $headers;
-    }
-
-    /**
-     * @param string|null $body
-     * @param array $params
+     * @param ScxApiRequest $request
+     *
      * @return ResponseInterface
-     * @throws RequestFailedException
+     *
      * @throws GuzzleException
+     * @throws RequestFailedException
      */
-    protected function request(string $body = null, array $params = []): ResponseInterface
+    protected function request(ScxApiRequest $request): ResponseInterface
     {
         try {
-            $url = $this->urlFactory->create($this->configuration->getHost(), $this->getUrl(), $params);
-            $request = $this->requestFactory->create($this->getHttpMethod(), $url, $this->createHeaders(), $body);
+            $url = $this->urlFactory->create(
+                $this->configuration->getHost(),
+                $request->getUrl(),
+                $request->getParams()
+            );
+            $request = $this->requestFactory->create(
+                $request->getHttpMethod(),
+                $url,
+                $this->createHeaders($request),
+                $request->getBody()
+            );
             return $this->client->send($request);
         } catch (ClientException|ServerException $exception) {
             $response = $exception->getResponse();
@@ -107,25 +80,24 @@ abstract class AbstractApi
                 $errorList = ObjectSerializer::deserialize($responseBody, ErrorList::class);
             }
 
-            throw new RequestFailedException($exception->getMessage(), $exception->getCode(), $errorList, $responseBody);
+            throw new RequestFailedException(
+                $exception->getMessage(),
+                $exception->getCode(),
+                $errorList,
+                $responseBody
+            );
         }
     }
 
     /**
-     * @return string
+     * @param ScxApiRequest $request
+     * @return array
      */
-    abstract protected function getUrl(): string;
-
-    /**
-     * @return string
-     */
-    abstract protected function getHttpMethod(): string;
-
-    /**
-     * @return string
-     */
-    protected function getContentType(): string
+    protected function createHeaders(ScxApiRequest $request): array
     {
-        return self::CONTENT_TYPE_JSON;
+        $headers = $request->getAdditionalHeaders();
+        $headers['Content-Type'] = $request->getContentType();
+
+        return $headers;
     }
 }

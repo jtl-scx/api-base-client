@@ -13,10 +13,7 @@ use JTL\SCX\Client\Response\AbstractResponse;
 
 class AuthResponse extends AbstractResponse
 {
-    /**
-     * @var AuthToken
-     */
-    private $authToken;
+    private AuthToken $authToken;
 
     /**
      * AuthResponse constructor.

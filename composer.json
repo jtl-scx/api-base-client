@@ -3,6 +3,7 @@
   "type": "library",
   "description": "SCX-Client Base",
   "require": {
+    "php": "^7.4",
     "ext-json": "*"
   },
   "autoload": {
