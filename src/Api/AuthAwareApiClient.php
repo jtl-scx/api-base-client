@@ -21,7 +21,7 @@ use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbstractAuthAwareApi extends AbstractApi
+class AuthAwareApiClient extends ApiClient
 {
     private AuthApi $authApi;
     private SessionTokenStorage $tokenStorage;
@@ -45,10 +45,16 @@ abstract class AbstractAuthAwareApi extends AbstractApi
         UrlFactory $urlFactory = null
     ) {
         parent::__construct($configuration, $client, $requestFactory, $urlFactory);
-        $this->authApi = $authApi ?? new AuthApi($configuration, $client);
+        $this->authApi = $authApi ?? new AuthApi(
+            new ApiClient(
+                $configuration,
+                $client,
+                $requestFactory,
+                $urlFactory
+            )
+        );
         $this->tokenStorage = $tokenStorage ?? new InMemorySessionTokenStorage();
     }
-
 
     /**
      * @param ScxApiRequest $request
@@ -56,7 +62,7 @@ abstract class AbstractAuthAwareApi extends AbstractApi
      * @throws GuzzleException
      * @throws RequestFailedException
      */
-    protected function request(ScxApiRequest $request): ResponseInterface
+    public function request(ScxApiRequest $request): ResponseInterface
     {
         $this->sessionToken = $this->tokenStorage->load($this->configuration->hashConfiguration());
 
@@ -75,9 +81,6 @@ abstract class AbstractAuthAwareApi extends AbstractApi
         }
     }
 
-    /**
-     * @return bool
-     */
     private function isSessionTokenExpired(): bool
     {
         if ($this->sessionToken === null) {
@@ -104,10 +107,6 @@ abstract class AbstractAuthAwareApi extends AbstractApi
         $this->tokenStorage->save($storageKey, $this->sessionToken);
     }
 
-    /**
-     * @param RequestFailedException $exception
-     * @return bool
-     */
     private function isUnauthorized(RequestFailedException $exception): bool
     {
         return $exception->getCode() === 401;

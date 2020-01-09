@@ -21,7 +21,7 @@ use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbstractApi
+class ApiClient
 {
     protected Configuration $configuration;
     private ClientInterface $client;
@@ -55,7 +55,7 @@ abstract class AbstractApi
      * @throws GuzzleException
      * @throws RequestFailedException
      */
-    protected function request(ScxApiRequest $request): ResponseInterface
+    public function request(ScxApiRequest $request): ResponseInterface
     {
         try {
             $url = $this->urlFactory->create(

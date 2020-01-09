@@ -24,12 +24,9 @@ use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class AbstractAuthAwareApiTest
- * @package JTL\SCX\Client\Api
- *
- * @covers \JTL\SCX\Client\Api\AbstractAuthAwareApi
+ * @covers \JTL\SCX\Client\Api\AuthAwareApiClient
  */
-class AbstractAuthAwareApiTest extends AbstractTestCase
+class AuthAwareApiTest extends AbstractTestCase
 {
     /**
      * @var SessionTokenStorage|Mockery\LegacyMockInterface|Mockery\MockInterface
@@ -101,7 +98,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
-        $testAuthApi = new TestAuthApi(
+        $testAuthApi = new AuthAwareApiClient(
             $configuration,
             $this->sessionTokenStorage,
             $client,
@@ -142,7 +139,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $response = $testAuthApi->call($requestMock);
+        $response = $testAuthApi->request($requestMock);
 
         $this->assertSame($this->response, $response);
     }
@@ -216,7 +213,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
             ->twice()
             ->andReturn(uniqid('url', true));
 
-        $testAuthApi = new TestAuthApi(
+        $testAuthApi = new AuthAwareApiClient(
             $configuration,
             $this->sessionTokenStorage,
             $client,
@@ -233,15 +230,7 @@ class AbstractAuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
 
-        $response = $testAuthApi->call($requestMock);
+        $response = $testAuthApi->request($requestMock);
         $this->assertSame($this->response, $response);
-    }
-}
-
-class TestAuthApi extends AbstractAuthAwareApi
-{
-    public function call(ScxApiRequest $request): ResponseInterface
-    {
-        return $this->request($request);
     }
 }

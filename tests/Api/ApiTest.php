@@ -20,12 +20,9 @@ use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class AbstractApiTest
- * @package JTL\SCX\Client\Api
- *
- * @covers \JTL\SCX\Client\Api\AbstractApi
+ * @covers \JTL\SCX\Client\Api\ApiClient
  */
-class AbstractApiTest extends AbstractTestCase
+class ApiTest extends AbstractTestCase
 {
     public function testCanCall(): void
     {
@@ -36,7 +33,7 @@ class AbstractApiTest extends AbstractTestCase
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
-        $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
+        $api = new ApiClient($configuration, $client, $requestFactory, $urlFactory);
 
         $requestMock = Mockery::mock(ScxApiRequest::class);
         $requestMock->shouldReceive('getUrl')->andReturn('/foo');
@@ -45,7 +42,7 @@ class AbstractApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $apiResponse = $api->call($requestMock);
+        $apiResponse = $api->request($requestMock);
 
         $this->assertSame($response, $apiResponse);
     }
@@ -83,7 +80,7 @@ class AbstractApiTest extends AbstractTestCase
             ->with($body, ErrorList::class)
             ->andReturn($errorList);
 
-        $api = new TestApi($configuration, $client, $requestFactory, $urlFactory);
+        $api = new ApiClient($configuration, $client, $requestFactory, $urlFactory);
 
         $requestMock = Mockery::mock(ScxApiRequest::class);
         $requestMock->shouldReceive('getUrl')->andReturn('/foo');
@@ -94,14 +91,6 @@ class AbstractApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getBody')->andReturnNull();
 
         $this->expectException(RequestFailedException::class);
-        $api->call($requestMock);
-    }
-}
-
-class TestApi extends AbstractApi
-{
-    public function call(ScxApiRequest $request): ResponseInterface
-    {
-        return $this->request($request);
+        $api->request($requestMock);
     }
 }

@@ -8,15 +8,12 @@
 
 namespace JTL\SCX\Client\Api\Auth;
 
-use GuzzleHttp\ClientInterface;
-use JTL\SCX\Client\AbstractTestCase;
-use JTL\SCX\Client\Api\AbstractApi;
+use JTL\SCX\Client\Api\ApiClient;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
+use JTL\SCX\Client\Api\Auth\Response\AuthResponse;
 use JTL\SCX\Client\Model\AuthToken;
-use JTL\SCX\Client\ObjectSerializer;
-use JTL\SCX\Client\Request\RequestFactory;
-use JTL\SCX\Client\Request\ScxApiRequest;
-use Mockery;
+use JTL\SCX\Client\ResponseDeserializer;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -25,48 +22,26 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @covers \JTL\SCX\Client\Api\Auth\AuthApi
  */
-class AuthApiTest extends AbstractTestCase
+class AuthApiTest extends TestCase
 {
     public function testCanAuthenticate()
     {
-        $responseMock = Mockery::mock(ResponseInterface::class);
-        $responseBody = uniqid('body', true);
-        $refreshToken = uniqid('refreshToken', true);
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
 
-        $responseMock->shouldReceive('getBody->getContents')
-            ->once()
-            ->andReturn($responseBody);
+        $requestMock = $this->createMock(AuthRequest::class);
 
-        $responseMock->shouldReceive('getStatusCode')
-            ->once()
-            ->andReturn(200);
+        $apiClientMock = $this->createMock(ApiClient::class);
+        $apiClientMock->expects($this->once())->method('request')->with($requestMock)->willReturn($responseMock);
 
-        $client = $this->createMock(ClientInterface::class);
-        $client->expects($this->once())->method('send')->willReturn($responseMock);
+        $serializerMock = $this->createMock(ResponseDeserializer::class);
+        $serializerMock->method('deserialize')
+            ->with($responseMock, AuthToken::class)
+            ->willReturn($this->createStub(AuthToken::class));
 
-        $configuration = $this->createConfigurationMock();
-        $requestFactory = $this->createMock(RequestFactory::class);
-        $urlFactory = $this->createUrlFactoryMock('/auth{?refreshToken}', ['refreshToken' => $refreshToken]);
-        $objectSerializer = Mockery::mock('alias:'. ObjectSerializer::class);
+        $api = new AuthApi($apiClientMock, $serializerMock);
+        $authTokenResponse = $api->auth($requestMock);
 
-        $authToken = Mockery::mock(AuthToken::class);
-
-        $objectSerializer->shouldReceive('deserialize')
-            ->with($responseBody, AuthToken::class)
-            ->once()
-            ->andReturn($authToken);
-
-        $request = Mockery::spy(AuthRequest::class);
-        $request->shouldReceive('getRefreshToken')->andReturn($refreshToken);
-        $request->shouldReceive('getUrl')->andReturn('/auth{?refreshToken}');
-        $request->shouldReceive('getParams')->andReturn(['refreshToken' => $refreshToken]);
-        $request->shouldReceive('getMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
-
-
-        $api = new AuthApi($configuration, $client, $requestFactory, $urlFactory);
-        $apiResponse = $api->auth($request);
-
-        $this->assertSame(200, $apiResponse->getStatusCode());
-        $this->assertSame($authToken, $apiResponse->getAuthToken());
+        $this->assertInstanceOf(AuthResponse::class, $authTokenResponse);
     }
 }

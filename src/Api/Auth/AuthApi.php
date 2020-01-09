@@ -9,15 +9,26 @@
 namespace JTL\SCX\Client\Api\Auth;
 
 use GuzzleHttp\Exception\GuzzleException;
-use JTL\SCX\Client\Api\AbstractApi;
+use JTL\SCX\Client\Api\ApiClient;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
 use JTL\SCX\Client\Api\Auth\Response\AuthResponse;
+use JTL\SCX\Client\ApiResponseDeserializer;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\AuthToken;
 use JTL\SCX\Client\ObjectSerializer;
+use JTL\SCX\Client\ResponseDeserializer;
 
-class AuthApi extends AbstractApi
+class AuthApi
 {
+    private ApiClient $apiClient;
+    private ResponseDeserializer $objectSerializer;
+
+    public function __construct(ApiClient $apiClient, ResponseDeserializer $objectSerializer)
+    {
+        $this->apiClient = $apiClient;
+        $this->objectSerializer = $objectSerializer;
+    }
+
     /**
      * @param AuthRequest $request
      * @return AuthResponse
@@ -26,11 +37,8 @@ class AuthApi extends AbstractApi
      */
     public function auth(AuthRequest $request): AuthResponse
     {
-        $response = $this->request($request);
-
-        /** @var AuthToken $model */
-        $model = ObjectSerializer::deserialize($response->getBody()->getContents(), AuthToken::class);
-
+        $response = $this->apiClient->request($request);
+        $model = $this->objectSerializer->deserialize($response, AuthToken::class);
         return new AuthResponse($model, $response->getStatusCode());
     }
 }
