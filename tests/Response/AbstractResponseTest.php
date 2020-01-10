@@ -25,8 +25,21 @@ class AbstractResponseTest extends TestCase
 
         $this->assertSame($statusCode, $testResponse->getStatusCode());
     }
+
+    public function testCanCheckIfResponseIsSuccessful()
+    {
+        $testResponse = new TestResponse(1);
+        $this->assertTrue($testResponse->isSuccessful());
+    }
 }
 
 class TestResponse extends AbstractResponse
 {
+    /**
+     * @inheritDoc
+     */
+    public function isSuccessful(): bool
+    {
+        return true;
+    }
 }

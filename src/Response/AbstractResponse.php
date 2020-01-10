@@ -8,7 +8,7 @@
 
 namespace JTL\SCX\Client\Response;
 
-class AbstractResponse
+abstract class AbstractResponse
 {
     private int $statusCode;
 
@@ -28,4 +28,9 @@ class AbstractResponse
     {
         return $this->statusCode;
     }
+
+    /**
+     * @return bool
+     */
+    abstract public function isSuccessful(): bool;
 }

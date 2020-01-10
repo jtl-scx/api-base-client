@@ -15,22 +15,19 @@ class AuthResponse extends AbstractResponse
 {
     private AuthToken $authToken;
 
-    /**
-     * AuthResponse constructor.
-     * @param AuthToken $authToken
-     * @param int $statusCode
-     */
     public function __construct(AuthToken $authToken, int $statusCode)
     {
         $this->authToken = $authToken;
         parent::__construct($statusCode);
     }
 
-    /**
-     * @return AuthToken
-     */
     public function getAuthToken(): AuthToken
     {
         return $this->authToken;
+    }
+
+    public function isSuccessful(): bool
+    {
+        return $this->getStatusCode() === 200;
     }
 }
