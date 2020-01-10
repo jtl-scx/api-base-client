@@ -22,15 +22,18 @@ abstract class AbstractResponse
     }
 
     /**
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
+    }
+
+    /**
      * @return int
      */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
-
-    /**
-     * @return bool
-     */
-    abstract public function isSuccessful(): bool;
 }

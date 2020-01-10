@@ -28,18 +28,17 @@ class AbstractResponseTest extends TestCase
 
     public function testCanCheckIfResponseIsSuccessful()
     {
-        $testResponse = new TestResponse(1);
+        $testResponse = new TestResponse(200);
         $this->assertTrue($testResponse->isSuccessful());
+    }
+
+    public function testCanCheckIfResponseIsFailed()
+    {
+        $testResponse = new TestResponse(500);
+        $this->assertFalse($testResponse->isSuccessful());
     }
 }
 
 class TestResponse extends AbstractResponse
 {
-    /**
-     * @inheritDoc
-     */
-    public function isSuccessful(): bool
-    {
-        return true;
-    }
 }
