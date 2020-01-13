@@ -17,7 +17,7 @@ class ApiResponseDeserializer implements ResponseDeserializer
         return $this->deserializeObject($response->getBody()->getContents(), $openApiModel);
     }
 
-    public function deserializeObject(\stdClass $data, string $openApiModel): object {
+    public function deserializeObject($data, string $openApiModel): object {
         return ObjectSerializer::deserialize($data, $openApiModel);
     }
 }

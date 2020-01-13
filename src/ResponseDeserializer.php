@@ -13,5 +13,5 @@ use Psr\Http\Message\ResponseInterface;
 interface ResponseDeserializer
 {
     public function deserialize(ResponseInterface $response, string $openApiModel): object;
-    public function deserializeObject(\stdClass $data, string $openApiModel): object;
+    public function deserializeObject($data, string $openApiModel): object;
 }
