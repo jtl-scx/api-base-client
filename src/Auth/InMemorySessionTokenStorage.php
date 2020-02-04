@@ -15,7 +15,7 @@ class InMemorySessionTokenStorage implements SessionTokenStorage
     /**
      * @var SessionToken[]
      */
-    private array $sessionTokenMap;
+    private array $sessionTokenMap = [];
 
     /**
      * @param string $key
