@@ -12,6 +12,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use JTL\SCX\Client\Api\Auth\AuthApi;
 use JTL\SCX\Client\Api\Auth\Request\AuthRequest;
+use JTL\SCX\Client\ApiResponseDeserializer;
 use JTL\SCX\Client\Auth\InMemorySessionTokenStorage;
 use JTL\SCX\Client\Auth\Model\SessionToken;
 use JTL\SCX\Client\Auth\SessionTokenStorage;
@@ -51,7 +52,8 @@ class AuthAwareApiClient extends ApiClient
                 $client,
                 $requestFactory,
                 $urlFactory
-            )
+            ),
+            new ApiResponseDeserializer()
         );
         $this->tokenStorage = $tokenStorage ?? new InMemorySessionTokenStorage();
     }
