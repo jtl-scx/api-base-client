@@ -9,7 +9,6 @@
 namespace JTL\SCX\Client\Auth;
 
 use JTL\SCX\Client\Auth\Model\SessionToken;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,7 +21,7 @@ class InMemorySessionTokenStorageTest extends TestCase
 {
     public function testCanSaveAndLoadSessionToken(): void
     {
-        $sessionToken = Mockery::mock(SessionToken::class);
+        $sessionToken = $this->createMock(SessionToken::class);
         $storage = new InMemorySessionTokenStorage();
 
         $storage->save('foo', $sessionToken);

@@ -23,6 +23,10 @@ class InMemorySessionTokenStorage implements SessionTokenStorage
      */
     public function load(string $key): ?SessionToken
     {
+        if (!isset($this->sessionTokenMap[$key])) {
+            return null;
+        }
+
         return $this->sessionTokenMap[$key];
     }
 
