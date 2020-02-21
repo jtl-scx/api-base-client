@@ -1,7 +1,7 @@
 {
-    "name": "jtl/scx-api-client",
+    "name": "jtl-scx/api-base-client",
     "type": "library",
-    "description": "SCX-Client Base",
+    "description": "SCX-API Base Client",
     "require": {
         "php": "^7.4",
         "ext-json": "*"
