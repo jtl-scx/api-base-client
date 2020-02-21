@@ -2,6 +2,7 @@
     "name": "jtl-scx/api-base-client",
     "type": "library",
     "description": "SCX-API Base Client",
+    "license": "MIT",
     "require": {
         "php": "^7.4",
         "ext-json": "*"
