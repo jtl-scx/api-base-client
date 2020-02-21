@@ -8,4 +8,4 @@ install:
 
 script:
   - composer phpcs-dry
-  - composer phpunit
+  - vendor/bin/phpunit --no-coverage
