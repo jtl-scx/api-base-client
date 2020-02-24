@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/1415186/75040771-2ed7df80-54b3-11ea-8657-41a0cae9dafc.png">
+  <img src="https://cdn.eazyauction.de/eastatic/scx_logo.png">
 </div>
 
 # SCX PHP-API-Base-Client
