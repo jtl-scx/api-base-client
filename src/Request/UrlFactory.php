@@ -8,7 +8,7 @@
 
 namespace JTL\SCX\Client\Request;
 
-use function GuzzleHttp\uri_template;
+use GuzzleHttp\UriTemplate\UriTemplate;
 
 class UrlFactory
 {
@@ -24,7 +24,8 @@ class UrlFactory
             $host .= '/';
         }
 
-        return uri_template($host . $url, $params);
+        $template = $host . $url;
+        return UriTemplate::expand($template, $params);
     }
 
     /**
