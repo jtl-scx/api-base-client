@@ -49,4 +49,14 @@ class RequestFailedException extends \Exception
 
         return [];
     }
+
+    public function hasErrorCode(string $code): bool
+    {
+        foreach ($this->getErrorResponseList() as $error) {
+            if ($error->getCode() === $code) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

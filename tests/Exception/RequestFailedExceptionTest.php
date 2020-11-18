@@ -10,6 +10,7 @@ namespace JTL\SCX\Client\Exception;
 
 use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Model\ErrorList;
+use JTL\SCX\Client\Model\ErrorResponse;
 use Mockery;
 
 /**
@@ -47,5 +48,19 @@ class RequestFailedExceptionTest extends AbstractTestCase
 
         $exception = new RequestFailedException($message, $code, null, null);
         $this->assertEquals([], $exception->getErrorResponseList());
+    }
+
+    public function testCanCheckIfErrorResponseHasErrorCode()
+    {
+        $errorList = new ErrorList();
+        $errorList->setErrorList([
+            new ErrorResponse(['message' => 'a_message', 'code' => '1']),
+            new ErrorResponse(['message' => 'a_message', 'code' => '2']),
+            new ErrorResponse(['message' => 'a_message', 'code' => '3']),
+        ]);
+        $exception = new RequestFailedException('foo', 123, $errorList, 'dont care');
+
+        $this->assertTrue($exception->hasErrorCode('1'));
+        $this->assertFalse($exception->hasErrorCode('this code is not present'));
     }
 }
