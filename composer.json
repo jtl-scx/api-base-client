@@ -5,16 +5,14 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
-        "ext-json": "*"
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/uri-template": "^0.2.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.15",
-        "phpunit/phpunit": "^8.3",
         "mockery/mockery": "^1.2",
-        "guzzlehttp/guzzle": "^6.3"
-    },
-    "suggest": {
-        "guzzlehttp/guzzle": "Require this for making HTTP calls"
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
