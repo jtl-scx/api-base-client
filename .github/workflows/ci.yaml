@@ -14,11 +14,11 @@ jobs:
         with:
           php-version: '7.4'
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
 
       - name: Check Code Style
         run: composer phpcs-dry
@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
         run: vendor/bin/phpunit
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
         run: vendor/bin/phpunit
