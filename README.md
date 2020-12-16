@@ -4,7 +4,7 @@
 
 # SCX PHP-API-Base-Client
 
-[![Build Status](https://travis-ci.org/jtl-scx/api-base-client.svg?branch=master)](https://travis-ci.org/jtl-scx/api-base-client)
+![Testing](https://github.com/jtl-scx/api-base-client/workflows/Testing/badge.svg)
 
 Base repository for JTL-Sales-Channel-Extension API Clients based on PHP. 
 
