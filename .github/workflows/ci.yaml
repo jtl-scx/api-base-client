@@ -1,6 +1,6 @@
 name: Testing
 
-on: [push]
+on: [ push ]
 
 jobs:
 
@@ -23,39 +23,30 @@ jobs:
       - name: Check Code Style
         run: composer phpcs-dry
 
-  testing-php74:
+  tests:
+    name: "Tests"
 
     runs-on: ubuntu-20.04
 
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "7.4"
+          - "8.0"
+
     steps:
-      - name: Setup PHP
+      - name: "Install PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: "${{ matrix.php-version }}"
+          coverage: xdebug3
 
-      - name: Checkout Code
+      - name: "Checkout"
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: "Install dependencies"
+        run: composer install --no-progress
 
-      - name: Run test suite
-        run: vendor/bin/phpunit
-
-  testing-php80:
-
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0'
-
-      - uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-
-      - name: Run test suite
-        run: vendor/bin/phpunit
+      - name: "Run test suite"
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
