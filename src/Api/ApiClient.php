@@ -16,6 +16,7 @@ use GuzzleHttp\Exception\ServerException;
 use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\ObjectSerializer;
+use JTL\SCX\Client\Request\Multipart\MultipartFormDataRequest;
 use JTL\SCX\Client\Request\RequestFactory;
 use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
@@ -28,13 +29,6 @@ class ApiClient
     private RequestFactory $requestFactory;
     private UrlFactory $urlFactory;
 
-    /**
-     * AbstractApi constructor.
-     * @param ClientInterface $client
-     * @param Configuration $configuration
-     * @param RequestFactory $requestFactory
-     * @param UrlFactory $urlFactory
-     */
     public function __construct(
         Configuration $configuration,
         ClientInterface $client = null,
@@ -63,14 +57,20 @@ class ApiClient
                 $request->getUrl(),
                 $request->getParams()
             );
-            $request = $this->requestFactory->create(
+            $apiRequest = $this->requestFactory->create(
                 $request->getHttpMethod(),
                 $url,
                 $this->createHeaders($request),
                 $request->getBody()
             );
-            return $this->client->send($request);
-        } catch (ClientException|ServerException $exception) {
+
+            $options = [];
+            if ($request instanceof MultipartFormDataRequest) {
+                $options['multipart'] = $this->buildMultipartBody($request);
+            }
+
+            return $this->client->send($apiRequest, $options);
+        } catch (ClientException | ServerException $exception) {
             $response = $exception->getResponse();
             $errorList = null;
             $responseBody = null;
@@ -96,8 +96,22 @@ class ApiClient
     protected function createHeaders(ScxApiRequest $request): array
     {
         $headers = $request->getAdditionalHeaders();
-        $headers['Content-Type'] = $request->getContentType();
-
+        if (!$request instanceof MultipartFormDataRequest) {
+            $headers['Content-Type'] = $request->getContentType();
+        }
         return $headers;
+    }
+
+    /**
+     * @param MultipartFormDataRequest $request
+     * @return array
+     */
+    private function buildMultipartBody(MultipartFormDataRequest $request): array
+    {
+        $parameters = [];
+        foreach ($request->buildMultipartBody() as $parameter) {
+            $parameters[] = ['name' => $parameter->getName(), 'contents' => $parameter->getContent()];
+        }
+        return $parameters;
     }
 }

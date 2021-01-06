@@ -11,6 +11,7 @@ namespace JTL\SCX\Client\Api\Auth\Response;
 use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Model\AuthToken;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class AuthResponseTest
@@ -18,16 +19,25 @@ use Mockery;
  *
  * @covers \JTL\SCX\Client\Api\Auth\Response\AuthResponse
  */
-class AuthResponseTest extends AbstractTestCase
+class AuthResponseTest extends TestCase
 {
-    public function testCanBeCreated(): void
+    /**
+     * @test
+     */
+    public function it_has_a_authToken(): void
     {
-        $authToken = Mockery::mock(AuthToken::class);
-        $statusCode = random_int(1, 100);
-
-        $response = new AuthResponse($authToken, $statusCode);
-
+        $authToken = $this->createStub(AuthToken::class);
+        $response = new AuthResponse($authToken, 200);
         $this->assertSame($authToken, $response->getAuthToken());
-        $this->assertSame($statusCode, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function request_is_considered_successful_one_http_status_200(): void
+    {
+        $statusSuccessful = 200;
+        $response = new AuthResponse($this->createStub(AuthToken::class), $statusSuccessful);
+        $this->assertTrue($response->isSuccessful());
     }
 }

@@ -22,13 +22,18 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @covers \JTL\SCX\Client\Api\ApiClient
  */
-class ApiTest extends AbstractTestCase
+class ApiClientTest extends AbstractTestCase
 {
     public function testCanCall(): void
     {
         $response = Mockery::mock(ResponseInterface::class);
 
-        $client = $this->createClientMock($response);
+        $client = $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('send')
+            ->once()
+            ->with(Mockery::type(Request::class), [])
+            ->andReturn($response);
+
         $configuration = $this->createConfigurationMock();
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
@@ -42,6 +47,7 @@ class ApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock->shouldReceive('getOptions')->andReturn([]);
         $apiResponse = $api->request($requestMock);
 
         $this->assertSame($response, $apiResponse);
@@ -65,7 +71,7 @@ class ApiTest extends AbstractTestCase
         $client = Mockery::mock(ClientInterface::class);
         $client->shouldReceive('send')
             ->once()
-            ->with(Mockery::type(Request::class))
+            ->with(Mockery::type(Request::class), [])
             ->andThrow(new ClientException('Error', $request, $response));
 
         $configuration = $this->createConfigurationMock();
@@ -89,6 +95,7 @@ class ApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock->shouldReceive('getOptions')->andReturn([]);
 
         $this->expectException(RequestFailedException::class);
         $api->request($requestMock);
