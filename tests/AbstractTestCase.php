@@ -39,21 +39,6 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return ClientInterface|Mockery\LegacyMockInterface|Mockery\MockInterface
-     */
-    protected function createClientMock(ResponseInterface $response)
-    {
-        $client = Mockery::mock(ClientInterface::class);
-        $client->shouldReceive('send')
-            ->once()
-            ->with(Mockery::type(Request::class))
-            ->andReturn($response);
-
-        return $client;
-    }
-
-    /**
      * @param string $method
      * @param string|null $body
      * @return RequestFactory|Mockery\LegacyMockInterface|Mockery\MockInterface

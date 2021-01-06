@@ -94,7 +94,12 @@ class AuthAwareApiTest extends AbstractTestCase
         $storageKey = 'key';
         $configuration->shouldReceive('hashConfiguration')->andReturn($storageKey);
 
-        $client = $this->createClientMock($this->response);
+        $client = $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('send')
+            ->once()
+            ->with(Mockery::type(Request::class), [])
+            ->andReturn($this->response);
+
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
         $urlFactory = $this->createUrlFactoryMock('/foo');
 
@@ -139,6 +144,7 @@ class AuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock->shouldReceive('getOptions')->andReturn([]);
         $response = $testAuthApi->request($requestMock);
 
         $this->assertSame($this->response, $response);
@@ -150,12 +156,12 @@ class AuthAwareApiTest extends AbstractTestCase
 
         $client->shouldReceive('send')
             ->once()
-            ->with(Mockery::type(Request::class))
+            ->with(Mockery::type(Request::class), [])
             ->andThrows(new RequestFailedException('FOO', 401, null, null));
 
         $client->shouldReceive('send')
             ->once()
-            ->with(Mockery::type(Request::class))
+            ->with(Mockery::type(Request::class), [])
             ->andReturn($this->response);
 
         $host = 'http://localhost';
@@ -229,6 +235,7 @@ class AuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock->shouldReceive('getOptions')->andReturn([]);
 
         $response = $testAuthApi->request($requestMock);
         $this->assertSame($this->response, $response);
