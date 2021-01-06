@@ -63,13 +63,6 @@ abstract class AbstractTestCase extends TestCase
      */
     protected function createUrlFactoryMock(string $url, array $params = [])
     {
-        $urlFactory = Mockery::mock(UrlFactory::class);
-
-        $urlFactory->shouldReceive('create')
-            ->with('http://localhost', $url, $params)
-            ->once()
-            ->andReturn(uniqid('url', true));
-
         return $urlFactory;
     }
 }

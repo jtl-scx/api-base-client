@@ -26,7 +26,7 @@ class AuthRequest implements ScxApiRequest
 
     public function getUrl(): string
     {
-        return '/auth{?refreshToken}';
+        return '/v1/auth';
     }
 
     public function getHttpMethod(): string
@@ -46,7 +46,7 @@ class AuthRequest implements ScxApiRequest
 
     public function getContentType(): string
     {
-        return self::CONTENT_TYPE_JSON;
+        return self::CONTENT_TYPE_FORM;
     }
 
     public function getAdditionalHeaders(): array

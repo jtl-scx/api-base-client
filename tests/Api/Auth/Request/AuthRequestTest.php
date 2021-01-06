@@ -8,6 +8,7 @@
 
 namespace JTL\SCX\Client\Api\Auth\Request;
 
+use JTL\SCX\Client\Request\ScxApiRequest;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,16 +32,25 @@ class AuthRequestTest extends TestCase
     /**
      * @test
      */
-    public function it_has_correct_url()
+    public function it_has_correct_url(): void
     {
         $sut = new AuthRequest('foo');
-        $this->assertEquals('/auth{?refreshToken}', $sut->getUrl());
+        $this->assertEquals('/v1/auth', $sut->getUrl());
     }
 
     /**
      * @test
      */
-    public function it_has_correct_http_method()
+    public function it_has_correct_content_type(): void
+    {
+        $sut = new AuthRequest('foo');
+        $this->assertEquals(ScxApiRequest::CONTENT_TYPE_FORM, $sut->getContentType());
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_correct_http_method(): void
     {
         $sut = new AuthRequest('foo');
         $this->assertEquals(AuthRequest::HTTP_METHOD_POST, $sut->getHttpMethod());
@@ -49,11 +59,12 @@ class AuthRequestTest extends TestCase
     /**
      * @test
      */
-    public function it_has_correct_http_parameters()
+    public function it_has_correct_http_parameters(): void
     {
-        $sut = new AuthRequest('a_refresh_token');
+        $token = 'a_refresh_token';
+        $sut = new AuthRequest($token);
         $params = $sut->getParams();
         $this->assertArrayHasKey('refreshToken', $params);
-        $this->assertEquals('a_refresh_token', $params['refreshToken']);
+        $this->assertEquals($token, $params['refreshToken']);
     }
 }
