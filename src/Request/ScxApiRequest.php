@@ -22,6 +22,8 @@ interface ScxApiRequest
 
     public const CONTENT_TYPE_JSON = 'application/json';
 
+    public const CONTENT_TYPE_FORM = 'application/x-www-form-urlencoded';
+
     public function getUrl(): string;
 
     public function getHttpMethod(): string;

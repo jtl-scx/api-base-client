@@ -16,6 +16,7 @@ use JTL\SCX\Client\Exception\RequestFailedException;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\ObjectSerializer;
 use JTL\SCX\Client\Request\ScxApiRequest;
+use JTL\SCX\Client\Request\UrlFactory;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 
@@ -36,7 +37,12 @@ class ApiClientTest extends AbstractTestCase
 
         $configuration = $this->createConfigurationMock();
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
-        $urlFactory = $this->createUrlFactoryMock('/foo');
+
+        $urlFactory = Mockery::mock(UrlFactory::class);
+        $urlFactory->shouldReceive('create')
+            ->with('http://localhost', '/foo', [])
+            ->once()
+            ->andReturn(uniqid('url', true));
 
         $api = new ApiClient($configuration, $client, $requestFactory, $urlFactory);
 
@@ -47,7 +53,40 @@ class ApiClientTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $requestMock->shouldReceive('getOptions')->andReturn([]);
+        $apiResponse = $api->request($requestMock);
+
+        $this->assertSame($response, $apiResponse);
+    }
+
+    public function testCanSendWithFormDataEncoded(): void
+    {
+        $formParams = ['foo' => 'bar'];
+        $response = Mockery::mock(ResponseInterface::class);
+
+        $client = $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('send')
+            ->once()
+            ->with(Mockery::type(Request::class), ['form_params' => $formParams])
+            ->andReturn($response);
+
+        $configuration = $this->createConfigurationMock();
+        $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
+
+        $urlFactory = Mockery::mock(UrlFactory::class);
+        $urlFactory->shouldReceive('create')
+            ->with('http://localhost', '/foo', $formParams)
+            ->once()
+            ->andReturn(uniqid('url', true));
+
+        $api = new ApiClient($configuration, $client, $requestFactory, $urlFactory);
+
+        $requestMock = Mockery::mock(ScxApiRequest::class);
+        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
+        $requestMock->shouldReceive('getParams')->andReturn($formParams);
+        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
+        $requestMock->shouldReceive('getContentType')->andReturn(ScxApiRequest::CONTENT_TYPE_FORM);
+        $requestMock->shouldReceive('getBody')->andReturnNull();
         $apiResponse = $api->request($requestMock);
 
         $this->assertSame($response, $apiResponse);
@@ -76,7 +115,12 @@ class ApiClientTest extends AbstractTestCase
 
         $configuration = $this->createConfigurationMock();
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
-        $urlFactory = $this->createUrlFactoryMock('/foo');
+
+        $urlFactory = Mockery::mock(UrlFactory::class);
+        $urlFactory->shouldReceive('create')
+            ->with('http://localhost', '/foo', [])
+            ->once()
+            ->andReturn(uniqid('url', true));
 
         $errorList = Mockery::mock(ErrorList::class);
 
@@ -95,7 +139,6 @@ class ApiClientTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $requestMock->shouldReceive('getOptions')->andReturn([]);
 
         $this->expectException(RequestFailedException::class);
         $api->request($requestMock);

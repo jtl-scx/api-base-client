@@ -69,6 +69,10 @@ class ApiClient
                 $options['multipart'] = $this->buildMultipartBody($request);
             }
 
+            if ($request->getContentType() === ScxApiRequest::CONTENT_TYPE_FORM) {
+                $options['form_params'] = $request->getParams();
+            }
+
             return $this->client->send($apiRequest, $options);
         } catch (ClientException | ServerException $exception) {
             $response = $exception->getResponse();

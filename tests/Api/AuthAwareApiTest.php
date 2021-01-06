@@ -101,7 +101,12 @@ class AuthAwareApiTest extends AbstractTestCase
             ->andReturn($this->response);
 
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
-        $urlFactory = $this->createUrlFactoryMock('/foo');
+
+        $urlFactory = Mockery::mock(UrlFactory::class);
+        $urlFactory->shouldReceive('create')
+            ->with('http://localhost', '/foo', [])
+            ->once()
+            ->andReturn(uniqid('url', true));
 
         $testAuthApi = new AuthAwareApiClient(
             $configuration,
@@ -144,7 +149,6 @@ class AuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $requestMock->shouldReceive('getOptions')->andReturn([]);
         $response = $testAuthApi->request($requestMock);
 
         $this->assertSame($this->response, $response);
@@ -235,7 +239,6 @@ class AuthAwareApiTest extends AbstractTestCase
         $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
         $requestMock->shouldReceive('getContentType')->andReturn('bier');
         $requestMock->shouldReceive('getBody')->andReturnNull();
-        $requestMock->shouldReceive('getOptions')->andReturn([]);
 
         $response = $testAuthApi->request($requestMock);
         $this->assertSame($this->response, $response);
