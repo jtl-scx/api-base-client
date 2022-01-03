@@ -4,7 +4,7 @@
     "description": "SCX-API Base Client",
     "license": "MIT",
     "require": {
-        "php": "^7.4|8.0.*",
+        "php": "^7.4|8.0.*|8.1.*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/uri-template": "^0.2.0 || ^1.0.0"
@@ -12,7 +12,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.15",
         "mockery/mockery": "^1.2",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "psalm/phar": "^4.17"
     },
     "autoload": {
         "psr-4": {
