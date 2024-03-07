@@ -4,13 +4,13 @@
     "description": "SCX-API Base Client",
     "license": "MIT",
     "require": {
-        "php": "8.0.*|8.1.*",
+        "php": " 8.1.* || 8.2.*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/uri-template": "^0.2.0 || ^1.0.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.15",
+        "friendsofphp/php-cs-fixer": " ^3.50.0",
         "mockery/mockery": "^1.2",
         "phpunit/phpunit": "^9.0",
         "psalm/phar": "^4.17"
@@ -27,10 +27,10 @@
     },
     "scripts": {
         "phpcs": [
-            "vendor/bin/php-cs-fixer fix --config=./.php_cs.dist"
+            "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php"
         ],
         "phpcs-dry": [
-            "vendor/bin/php-cs-fixer fix --config=./.php_cs.dist --dry-run"
+            "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php --dry-run"
         ]
     },
     "config": {
