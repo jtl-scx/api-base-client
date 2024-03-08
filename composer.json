@@ -4,7 +4,7 @@
     "description": "SCX-API Base Client",
     "license": "MIT",
     "require": {
-        "php": " 8.1.* || 8.2.*",
+        "php": "8.1.* || 8.2.* || 8.3.*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/uri-template": "^0.2.0 || ^1.0.0"
