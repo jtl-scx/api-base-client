@@ -11,27 +11,26 @@ namespace JTL\SCX\Client\Exception;
 use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Model\ErrorList;
 use JTL\SCX\Client\Model\ErrorResponse;
-use Mockery;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class RequestFailedExceptionTest
  * @package JTL\SCX\Client\Exception
- *
- * @covers \JTL\SCX\Client\Exception\RequestFailedException
  */
+#[CoversClass(RequestFailedException::class)]
 class RequestFailedExceptionTest extends AbstractTestCase
 {
     public function testCanGetValues(): void
     {
         $message = uniqid('message', true);
         $code = random_int(1, 10000);
-        $errorList = Mockery::mock(ErrorList::class);
+        $errorList = $this->createMock(ErrorList::class);
         $body = uniqid('body', true);
         $errorListArray = ['error'];
 
-        $errorList->shouldReceive('getErrorList')
-            ->twice()
-            ->andReturn($errorListArray);
+        $errorList->expects($this->exactly(2))
+            ->method('getErrorList')
+            ->willReturn($errorListArray);
 
         $exception = new RequestFailedException($message, $code, $errorList, $body);
         $this->assertEquals($message, $exception->getMessage());

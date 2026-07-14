@@ -8,12 +8,13 @@
 
 namespace JTL\SCX\Client;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+
 /**
  * Class JsonSerializerTest
  * @package JTL\SCX\Client\Serializer
- *
- * @covers \JTL\SCX\Client\JsonSerializer
  */
+#[CoversClass(JsonSerializer::class)]
 class JsonSerializerTest extends AbstractTestCase
 {
     public function testCanDeserialize(): void

@@ -12,7 +12,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.3'
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -23,6 +23,9 @@ jobs:
       - name: Check Code Style
         run: composer phpcs-dry
 
+      - name: Static Analysis
+        run: composer phpstan
+
   tests:
     name: "Tests"
 
@@ -32,10 +35,9 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "8.1"
-          - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
 
     steps:
       - name: "Install PHP"
@@ -52,8 +54,3 @@ jobs:
 
       - name: "Run test suite"
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
-        
-      - name: "Send coverage to codecov.io"
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}

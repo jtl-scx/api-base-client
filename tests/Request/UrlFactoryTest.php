@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Request;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class UrlFactoryTest
  * @package JTL\SCX\Client\Request
- *
- * @covers \JTL\SCX\Client\Request\UrlFactory
  */
+#[CoversClass(UrlFactory::class)]
 class UrlFactoryTest extends TestCase
 {
     public function testCanCreateUrl()

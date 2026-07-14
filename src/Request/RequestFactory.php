@@ -20,7 +20,7 @@ class RequestFactory
      * @param string|null $body
      * @return RequestInterface
      */
-    public function create(string $method, string $url, array $headers, string $body = null): RequestInterface
+    public function create(string $method, string $url, array $headers, ?string $body = null): RequestInterface
     {
         return new Request($method, $url, $headers, $body);
     }

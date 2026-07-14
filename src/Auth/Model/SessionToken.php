@@ -17,7 +17,7 @@ class SessionToken
     /**
      * AuthToken constructor.
      * @param string $sessionToken
-     * @param \DateTimeInterface|null $expiresAt
+     * @param \DateTimeInterface $expiresAt
      */
     public function __construct(string $sessionToken, \DateTimeInterface $expiresAt)
     {

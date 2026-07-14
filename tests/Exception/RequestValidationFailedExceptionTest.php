@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class RequestValidationFailedExceptionTest
  * @package JTL\SCX\Client\Exception
- *
- * @covers \JTL\SCX\Client\Exception\RequestValidationFailedException
  */
+#[CoversClass(RequestValidationFailedException::class)]
 class RequestValidationFailedExceptionTest extends TestCase
 {
     public function testCanGetValues(): void

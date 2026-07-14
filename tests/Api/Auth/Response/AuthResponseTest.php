@@ -12,18 +12,17 @@ use JTL\SCX\Client\AbstractTestCase;
 use JTL\SCX\Client\Model\AuthToken;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Class AuthResponseTest
  * @package JTL\SCX\Client\Api\Auth\Response
- *
- * @covers \JTL\SCX\Client\Api\Auth\Response\AuthResponse
  */
+#[CoversClass(AuthResponse::class)]
 class AuthResponseTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_has_a_authToken(): void
     {
         $authToken = $this->createStub(AuthToken::class);
@@ -31,9 +30,7 @@ class AuthResponseTest extends TestCase
         $this->assertSame($authToken, $response->getAuthToken());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function request_is_considered_successful_one_http_status_200(): void
     {
         $statusSuccessful = 200;

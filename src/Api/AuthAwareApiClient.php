@@ -39,11 +39,11 @@ class AuthAwareApiClient extends ApiClient
      */
     public function __construct(
         Configuration $configuration,
-        SessionTokenStorage $tokenStorage = null,
-        ClientInterface $client = null,
-        AuthApi $authApi = null,
-        RequestFactory $requestFactory = null,
-        UrlFactory $urlFactory = null
+        ?SessionTokenStorage $tokenStorage = null,
+        ?ClientInterface $client = null,
+        ?AuthApi $authApi = null,
+        ?RequestFactory $requestFactory = null,
+        ?UrlFactory $urlFactory = null
     ) {
         parent::__construct($configuration, $client, $requestFactory, $urlFactory);
         $this->authApi = $authApi ?? new AuthApi(
