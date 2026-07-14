@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Response;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class AbstractResponseTest
  * @package JTL\SCX\Client\Response
- *
- * @covers \JTL\SCX\Client\Response\AbstractResponse
  */
+#[CoversClass(AbstractResponse::class)]
 class AbstractResponseTest extends TestCase
 {
     public function testCanBeCreated(): void

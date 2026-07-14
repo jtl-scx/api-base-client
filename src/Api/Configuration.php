@@ -21,7 +21,7 @@ class Configuration
      * @param string $host
      * @param string|null $refreshToken
      */
-    public function __construct(string $host = self::HOST_PRODUCTION, string $refreshToken = null)
+    public function __construct(string $host = self::HOST_PRODUCTION, ?string $refreshToken = null)
     {
         $this->host = $host;
         $this->refreshToken = $refreshToken;

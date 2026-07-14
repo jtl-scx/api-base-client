@@ -10,18 +10,18 @@ namespace JTL\SCX\Client\Auth;
 
 use JTL\SCX\Client\Auth\Model\SessionToken;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class InMemorySessionTokenStorageTest
  * @package JTL\SCX\Client\Auth
- *
- * @covers \JTL\SCX\Client\Auth\InMemorySessionTokenStorage
  */
+#[CoversClass(InMemorySessionTokenStorage::class)]
 class InMemorySessionTokenStorageTest extends TestCase
 {
     public function testCanSaveAndLoadSessionToken(): void
     {
-        $sessionToken = $this->createMock(SessionToken::class);
+        $sessionToken = $this->createStub(SessionToken::class);
         $storage = new InMemorySessionTokenStorage();
 
         $storage->save('foo', $sessionToken);

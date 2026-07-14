@@ -17,96 +17,72 @@ use JTL\SCX\Client\Api\Auth\Response\AuthResponse;
 use JTL\SCX\Client\Auth\Model\SessionToken;
 use JTL\SCX\Client\Auth\SessionTokenStorage;
 use JTL\SCX\Client\Exception\RequestFailedException;
+use JTL\SCX\Client\Model\AuthToken;
 use JTL\SCX\Client\Request\RequestFactory;
 use JTL\SCX\Client\Request\ScxApiRequest;
 use JTL\SCX\Client\Request\UrlFactory;
-use Mockery;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use Psr\Http\Message\ResponseInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \JTL\SCX\Client\Api\AuthAwareApiClient
- */
+#[CoversClass(AuthAwareApiClient::class)]
 class AuthAwareApiTest extends AbstractTestCase
 {
-    /**
-     * @var SessionTokenStorage|Mockery\LegacyMockInterface|Mockery\MockInterface
-     */
-    private $sessionTokenStorage;
+    private SessionTokenStorage&MockObject $sessionTokenStorage;
 
-    /**
-     * @var AuthApi|Mockery\LegacyMockInterface|Mockery\MockInterface
-     */
-    private $authApi;
+    private AuthApi&MockObject $authApi;
 
-    /**
-     * @var Mockery\LegacyMockInterface|Mockery\MockInterface|ResponseInterface
-     */
-    private $response;
+    private ResponseInterface&Stub $response;
 
-    /**
-     * @var SessionToken|Mockery\LegacyMockInterface|Mockery\MockInterface
-     */
-    private $sessionTokenMock;
+    private string $refreshToken;
 
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $tokenExpiresAt;
+    private int $expiresIn;
 
-    /**
-     * @var string
-     */
-    private $refreshToken;
+    private AuthResponse&MockObject $authResponse;
 
-    /**
-     * @var int
-     */
-    private $expiresIn;
-
-    /**
-     * @var AuthResponse|Mockery\LegacyMockInterface|Mockery\MockInterface
-     */
-    private $authResponse;
-
-    /**
-     * @var string
-     */
-    private $sessionToken;
-
+    private string $sessionToken;
 
     public function setUp(): void
     {
-        $this->tokenExpiresAt = new \DateTimeImmutable();
         $this->refreshToken = uniqid('refreshToken');
         $this->sessionToken = uniqid('sessionToken');
         $this->expiresIn = random_int(1, 200);
 
-        $this->sessionTokenMock = Mockery::mock(SessionToken::class);
-        $this->sessionTokenStorage = Mockery::mock(SessionTokenStorage::class);
-        $this->authApi = Mockery::mock(AuthApi::class);
-        $this->authResponse = Mockery::mock(AuthResponse::class);
-        $this->response = Mockery::mock(ResponseInterface::class);
+        $this->sessionTokenStorage = $this->createMock(SessionTokenStorage::class);
+        $this->authApi = $this->createMock(AuthApi::class);
+        $this->authResponse = $this->createMock(AuthResponse::class);
+        $this->response = $this->createStub(ResponseInterface::class);
+    }
+
+    private function createAuthTokenMock(): AuthToken&MockObject
+    {
+        $authToken = $this->createMock(AuthToken::class);
+        $authToken->expects($this->once())->method('getAuthToken')->willReturn($this->sessionToken);
+        $authToken->expects($this->once())->method('getExpiresIn')->willReturn($this->expiresIn);
+
+        return $authToken;
     }
 
     public function testCanRequestWithoutSessionToken(): void
     {
         $configuration = $this->createConfigurationMock();
         $storageKey = 'key';
-        $configuration->shouldReceive('hashConfiguration')->andReturn($storageKey);
+        $configuration->method('hashConfiguration')->willReturn($storageKey);
 
-        $client = $client = Mockery::mock(ClientInterface::class);
-        $client->shouldReceive('send')
-            ->once()
-            ->with(Mockery::type(Request::class), [])
-            ->andReturn($this->response);
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())
+            ->method('send')
+            ->with($this->isInstanceOf(Request::class), [])
+            ->willReturn($this->response);
 
         $requestFactory = $this->createRequestFactoryMock(ScxApiRequest::HTTP_METHOD_POST);
 
-        $urlFactory = Mockery::mock(UrlFactory::class);
-        $urlFactory->shouldReceive('create')
+        $urlFactory = $this->createMock(UrlFactory::class);
+        $urlFactory->expects($this->once())
+            ->method('create')
             ->with('http://localhost', '/foo', [])
-            ->once()
-            ->andReturn(uniqid('url', true));
+            ->willReturn(uniqid('url', true));
 
         $testAuthApi = new AuthAwareApiClient(
             $configuration,
@@ -117,38 +93,34 @@ class AuthAwareApiTest extends AbstractTestCase
             $urlFactory
         );
 
-        $this->sessionTokenStorage->shouldReceive('load')
-            ->once()
-            ->andReturnNull();
+        $this->sessionTokenStorage->expects($this->once())
+            ->method('load')
+            ->willReturn(null);
 
-        $configuration->shouldReceive('getRefreshToken')
-            ->once()
-            ->andReturn($this->refreshToken);
+        $configuration->expects($this->once())
+            ->method('getRefreshToken')
+            ->willReturn($this->refreshToken);
 
-        $this->authApi->shouldReceive('auth')
-            ->with(Mockery::type(AuthRequest::class))
-            ->once()
-            ->andReturn($this->authResponse);
+        $this->authApi->expects($this->once())
+            ->method('auth')
+            ->with($this->isInstanceOf(AuthRequest::class))
+            ->willReturn($this->authResponse);
 
-        $this->authResponse->shouldReceive('getAuthToken->getAuthToken')
-            ->once()
-            ->andReturn($this->sessionToken);
+        $this->authResponse->expects($this->exactly(2))
+            ->method('getAuthToken')
+            ->willReturn($this->createAuthTokenMock());
 
-        $this->authResponse->shouldReceive('getAuthToken->getExpiresIn')
-            ->once()
-            ->andReturn($this->expiresIn);
+        $this->sessionTokenStorage->expects($this->once())
+            ->method('save')
+            ->with($storageKey, $this->isInstanceOf(SessionToken::class));
 
-        $this->sessionTokenStorage->shouldReceive('save')
-            ->once()
-            ->with($storageKey, Mockery::type(SessionToken::class));
-
-        $requestMock = Mockery::mock(ScxApiRequest::class);
-        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
-        $requestMock->shouldReceive('getParams')->andReturn([]);
-        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
-        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
-        $requestMock->shouldReceive('getContentType')->andReturn('bier');
-        $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock = $this->createStub(ScxApiRequest::class);
+        $requestMock->method('getUrl')->willReturn('/foo');
+        $requestMock->method('getParams')->willReturn([]);
+        $requestMock->method('getHttpMethod')->willReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->method('getAdditionalHeaders')->willReturn([]);
+        $requestMock->method('getContentType')->willReturn('bier');
+        $requestMock->method('getBody')->willReturn(null);
         $response = $testAuthApi->request($requestMock);
 
         $this->assertSame($this->response, $response);
@@ -156,72 +128,71 @@ class AuthAwareApiTest extends AbstractTestCase
 
     public function testCanRequestIfRequestFails(): void
     {
-        $client = Mockery::mock(ClientInterface::class);
+        $client = $this->createMock(ClientInterface::class);
 
-        $client->shouldReceive('send')
-            ->once()
-            ->with(Mockery::type(Request::class), [])
-            ->andThrows(new RequestFailedException('FOO', 401, null, null));
+        $sendCallCount = 0;
+        $client->expects($this->exactly(2))
+            ->method('send')
+            ->with($this->isInstanceOf(Request::class), [])
+            ->willReturnCallback(function () use (&$sendCallCount) {
+                $sendCallCount++;
+                if ($sendCallCount === 1) {
+                    throw new RequestFailedException('FOO', 401, null, null);
+                }
 
-        $client->shouldReceive('send')
-            ->once()
-            ->with(Mockery::type(Request::class), [])
-            ->andReturn($this->response);
+                return $this->response;
+            });
 
         $host = 'http://localhost';
 
-        $configuration = Mockery::mock(Configuration::class);
+        $configuration = $this->createMock(Configuration::class);
         $storageKey = 'key';
-        $configuration->shouldReceive('hashConfiguration')->andReturn($storageKey);
-        $configuration->shouldReceive('getHost')->andReturn($host);
+        $configuration->method('hashConfiguration')->willReturn($storageKey);
+        $configuration->method('getHost')->willReturn($host);
 
-        $this->sessionTokenStorage->shouldReceive('load')
-            ->once()
-            ->andReturn($this->sessionTokenMock);
+        $sessionTokenMock = $this->createMock(SessionToken::class);
+        $sessionTokenMock->expects($this->once())
+            ->method('getExpiresAt')
+            ->willReturn(new \DateTimeImmutable('+1 day'));
+        $sessionTokenMock->expects($this->once())
+            ->method('getSessionToken')
+            ->willReturn($this->sessionToken);
 
-        $this->sessionTokenMock->shouldReceive('getExpiresAt')
-            ->once()
-            ->andReturn(new \DateTimeImmutable('+1 day'));
+        $this->sessionTokenStorage->expects($this->once())
+            ->method('load')
+            ->willReturn($sessionTokenMock);
 
-        $configuration->shouldReceive('getRefreshToken')
-            ->once()
-            ->andReturn($this->refreshToken);
+        $configuration->expects($this->once())
+            ->method('getRefreshToken')
+            ->willReturn($this->refreshToken);
 
-        $this->sessionTokenMock->shouldReceive('getSessionToken')
-            ->once()
-            ->andReturn($this->sessionToken);
+        $this->authApi->expects($this->once())
+            ->method('auth')
+            ->with($this->isInstanceOf(AuthRequest::class))
+            ->willReturn($this->authResponse);
 
-        $this->authApi->shouldReceive('auth')
-            ->with(Mockery::type(AuthRequest::class))
-            ->once()
-            ->andReturn($this->authResponse);
+        $this->authResponse->expects($this->exactly(2))
+            ->method('getAuthToken')
+            ->willReturn($this->createAuthTokenMock());
 
-        $this->authResponse->shouldReceive('getAuthToken->getAuthToken')
-            ->once()
-            ->andReturn($this->sessionToken);
+        $this->sessionTokenStorage->expects($this->once())
+            ->method('save')
+            ->with($storageKey, $this->isInstanceOf(SessionToken::class));
 
-        $this->authResponse->shouldReceive('getAuthToken->getExpiresIn')
-            ->once()
-            ->andReturn($this->expiresIn);
+        $requestFactory = $this->createMock(RequestFactory::class);
+        $request = $this->createStub(Request::class);
 
-        $this->sessionTokenStorage->shouldReceive('save')
-            ->once()
-            ->with($storageKey, Mockery::type(SessionToken::class));
+        $requestFactory->expects($this->exactly(2))
+            ->method('create')
+            ->with(ScxApiRequest::HTTP_METHOD_POST, $this->anything(), $this->anything(), null)
+            ->willReturn($request);
 
-        $requestFactory = Mockery::mock(RequestFactory::class);
-        $request = Mockery::mock(Request::class);
+        $urlFactory = $this->createMock(UrlFactory::class);
 
-        $requestFactory->shouldReceive('create')
-            ->with(ScxApiRequest::HTTP_METHOD_POST, Mockery::any(), Mockery::any(), null)
-            ->twice()
-            ->andReturn($request);
-
-        $urlFactory = Mockery::mock(UrlFactory::class);
-
-        $urlFactory->shouldReceive('create')
+        $urlFactory->expects($this->exactly(2))
+            ->method('create')
             ->with('http://localhost', '/foo', [])
-            ->twice()
-            ->andReturn(uniqid('url', true));
+            ->willReturn(uniqid('url', true));
 
         $testAuthApi = new AuthAwareApiClient(
             $configuration,
@@ -232,13 +203,13 @@ class AuthAwareApiTest extends AbstractTestCase
             $urlFactory
         );
 
-        $requestMock = Mockery::mock(ScxApiRequest::class);
-        $requestMock->shouldReceive('getUrl')->andReturn('/foo');
-        $requestMock->shouldReceive('getParams')->andReturn([]);
-        $requestMock->shouldReceive('getHttpMethod')->andReturn(ScxApiRequest::HTTP_METHOD_POST);
-        $requestMock->shouldReceive('getAdditionalHeaders')->andReturn([]);
-        $requestMock->shouldReceive('getContentType')->andReturn('bier');
-        $requestMock->shouldReceive('getBody')->andReturnNull();
+        $requestMock = $this->createStub(ScxApiRequest::class);
+        $requestMock->method('getUrl')->willReturn('/foo');
+        $requestMock->method('getParams')->willReturn([]);
+        $requestMock->method('getHttpMethod')->willReturn(ScxApiRequest::HTTP_METHOD_POST);
+        $requestMock->method('getAdditionalHeaders')->willReturn([]);
+        $requestMock->method('getContentType')->willReturn('bier');
+        $requestMock->method('getBody')->willReturn(null);
 
         $response = $testAuthApi->request($requestMock);
         $this->assertSame($this->response, $response);

@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Api;
 
 use JTL\SCX\Client\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class ConfigurationTest
  * @package JTL\SCX\Client\Api
- *
- * @covers \JTL\SCX\Client\Api\Configuration
  */
+#[CoversClass(Configuration::class)]
 class ConfigurationTest extends AbstractTestCase
 {
     public function testCanBeCreated(): void

@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Request;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class RequestFactoryTest
  * @package JTL\SCX\Client\Request
- *
- * @covers \JTL\SCX\Client\Request\RequestFactory
  */
+#[CoversClass(RequestFactory::class)]
 class RequestFactoryTest extends TestCase
 {
     public function testCreateRequest()

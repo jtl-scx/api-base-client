@@ -31,9 +31,9 @@ class ApiClient
 
     public function __construct(
         Configuration $configuration,
-        ClientInterface $client = null,
-        RequestFactory $requestFactory = null,
-        UrlFactory $urlFactory = null
+        ?ClientInterface $client = null,
+        ?RequestFactory $requestFactory = null,
+        ?UrlFactory $urlFactory = null
     ) {
         $this->configuration = $configuration;
         $this->client = $client ?? new Client();

@@ -15,21 +15,21 @@ use JTL\SCX\Client\Model\AuthToken;
 use JTL\SCX\Client\ResponseDeserializer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class AuthApiTest
  * @package JTL\SCX\Client\Api\Auth
- *
- * @covers \JTL\SCX\Client\Api\Auth\AuthApi
  */
+#[CoversClass(AuthApi::class)]
 class AuthApiTest extends TestCase
 {
     public function testCanAuthenticate()
     {
-        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock = $this->createStub(ResponseInterface::class);
         $responseMock->method('getStatusCode')->willReturn(200);
 
-        $requestMock = $this->createMock(AuthRequest::class);
+        $requestMock = $this->createStub(AuthRequest::class);
 
         $apiClientMock = $this->createMock(ApiClient::class);
         $apiClientMock->expects($this->once())->method('request')->with($requestMock)->willReturn($responseMock);

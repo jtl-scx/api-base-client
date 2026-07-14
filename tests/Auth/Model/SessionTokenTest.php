@@ -9,13 +9,13 @@
 namespace JTL\SCX\Client\Auth\Model;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class SessionTokenTest
  * @package JTL\SCX\Client\Auth\Model
- *
- * @covers \JTL\SCX\Client\Auth\Model\SessionToken
  */
+#[CoversClass(SessionToken::class)]
 class SessionTokenTest extends TestCase
 {
     public function testCanBeCreated(): void
