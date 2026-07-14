@@ -15,7 +15,7 @@ jobs:
           php-version: '8.3'
 
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
@@ -47,7 +47,7 @@ jobs:
           coverage: xdebug3
 
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: "Install dependencies"
         run: composer install --no-progress
